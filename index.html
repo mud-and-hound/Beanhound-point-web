@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-t="light">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -13,503 +13,283 @@
   --bg:#f4f4f5;--surface:#fff;--surface-2:#fafafa;
   --text:#111113;--text-2:#6b6b70;--text-3:#9a9aa0;
   --line:#e4e4e7;--line-2:#d4d4d8;
-  --accent:#111113;--accent-fg:#fff;
-  --ok:#0f7a4d;--ok-bg:#e8f5ee;
-  --warn:#a86a00;--warn-bg:#fdf3e2;
-  --bad:#b4231f;--bad-bg:#fdeceb;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06);
-  --r:14px;--rp:50px;--ri:10px;
+  --ok:#0f7a4d;--ok-bg:#e8f5ee;--bad:#b4231f;--bad-bg:#fdeceb;
 }
-[data-t="dark"]{
+@media(prefers-color-scheme:dark){:root{
   --bg:#0c0c0e;--surface:#151518;--surface-2:#1c1c20;
   --text:#f4f4f5;--text-2:#a1a1aa;--text-3:#71717a;
   --line:#27272b;--line-2:#3a3a40;
-  --accent:#f4f4f5;--accent-fg:#111113;
-  --ok:#4ade80;--ok-bg:#0e2a1c;
-  --warn:#fbbf24;--warn-bg:#2b2110;
-  --bad:#f87171;--bad-bg:#2c1413;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
-}
+  --ok:#4ade80;--ok-bg:#0e2a1c;--bad:#f87171;--bad-bg:#2c1413;
+}}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Prompt',-apple-system,sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;display:flex;justify-content:center;transition:background .25s,color .25s}
+  min-height:100vh;display:flex;justify-content:center}
 .svgic{width:1em;height:1em;fill:currentColor;display:inline-block;vertical-align:-.14em;flex-shrink:0}
 .app{width:100%;max-width:430px;min-height:100vh;background:var(--surface);
-  display:flex;flex-direction:column;box-shadow:var(--shadow);position:relative}
-
-.top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--surface) 85%,transparent);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
-  padding:13px 18px;display:flex;align-items:center;gap:10px;min-height:56px}
-.brand{flex:1;font-size:13px;font-weight:700;letter-spacing:.18em}
-.brand span{display:block;font-size:9px;font-weight:400;letter-spacing:.1em;color:var(--text-3);margin-top:2px}
-.ib{width:34px;height:34px;border:none;background:transparent;color:var(--text-2);border-radius:10px;
-  display:grid;place-items:center;font-size:16px;cursor:pointer;transition:.15s}
-.ib:hover{background:var(--surface-2);color:var(--text)}
-.ib:active{transform:scale(.9)}
-main{flex:1;padding:22px 18px 40px}
-.scr{display:none;animation:in .28s cubic-bezier(.2,.8,.2,1)}
-.scr.on{display:block}
+  display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.07)}
+.top{border-bottom:1px solid var(--line);padding:16px 20px}
+.top b{font-size:13px;font-weight:700;letter-spacing:.16em;display:block}
+.top span{font-size:9px;letter-spacing:.1em;color:var(--text-3);margin-top:3px;display:block}
+main{flex:1;padding:24px 20px 40px}
+.scr{display:none}.scr.on{display:block;animation:in .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-h1{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.35}
-h2{font-size:16px;font-weight:600}
-.sub{font-size:13px;color:var(--text-2);line-height:1.65;margin-top:7px}
-.lbl{font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;
-  margin-bottom:8px;display:block}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+h1{font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1.35;text-align:center}
+h2{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.sub{font-size:13px;color:var(--text-2);line-height:1.7;margin-top:9px;text-align:center}
+.lbl{font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:.07em;display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
 .card.flat{background:var(--surface-2);border-color:transparent}
 .card.mark{border:1.5px solid var(--text)}
-.btn{width:100%;border:none;border-radius:var(--rp);padding:16px 20px;font-family:inherit;font-size:15px;
-  font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
-  text-decoration:none;transition:transform .12s cubic-bezier(.2,.8,.2,1),opacity .15s}
-.btn:active{transform:scale(.96)}
-.btn.p{background:var(--accent);color:var(--accent-fg)}
-.btn.s{background:transparent;color:var(--text-2);border:1.5px solid var(--line-2)}
-.btn.s:hover{border-color:var(--text-3);color:var(--text)}
-.btn.g{background:#06C755;color:#fff;font-size:16px;font-weight:600;padding:18px 20px}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-.inp{width:100%;padding:14px 15px;border:1.5px solid var(--line-2);border-radius:var(--ri);
-  font-family:inherit;font-size:15px;background:var(--surface);color:var(--text);outline:none;transition:.15s}
-.inp:focus{border-color:var(--text);box-shadow:0 0 0 3px color-mix(in srgb,var(--text) 8%,transparent)}
-.inp::placeholder{color:var(--text-3)}
 .row{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;font-size:14px;gap:14px}
 .row+.row{border-top:1px solid var(--line)}
 .row .k{color:var(--text-2);font-size:13px;flex-shrink:0}
 .row .v{font-weight:500;text-align:right}
-.tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--rp);
-  font-size:11.5px;font-weight:500;line-height:1}
-.tag.ok{background:var(--ok-bg);color:var(--ok)}
-.tag.bad{background:var(--bad-bg);color:var(--bad)}
-.tag.warn{background:var(--warn-bg);color:var(--warn)}
-.note{display:flex;gap:11px;padding:13px 15px;border-radius:var(--ri);font-size:12.5px;line-height:1.6}
-.note.ok{background:var(--ok-bg);color:var(--ok)}
-.note.warn{background:var(--warn-bg);color:var(--warn)}
-.note.bad{background:var(--bad-bg);color:var(--bad)}
-.note .svgic{font-size:16px;margin-top:1px}
-.mt{margin-top:20px}.mt-s{margin-top:12px}.mt-l{margin-top:28px}
-.center{text-align:center}
-.hint{font-size:11.5px;color:var(--text-3);line-height:1.6;text-align:center}
-.div{height:1px;background:var(--line);margin:20px 0}
-
-/* hero scan */
-.hero{text-align:center;padding:26px 0 10px}
-.heroic{width:88px;height:88px;border-radius:26px;background:var(--surface-2);display:grid;place-items:center;
-  margin:0 auto 22px;font-size:38px;color:var(--text)}
-/* scanner */
-.cam{position:relative;width:100%;aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:#000}
-.cam video{width:100%;height:100%;object-fit:cover}
+.btn{width:100%;border:none;border-radius:50px;padding:17px 20px;font-family:inherit;font-size:15px;
+  font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  text-decoration:none;transition:transform .12s cubic-bezier(.2,.8,.2,1)}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--text);color:var(--surface)}
+.btn.s{background:transparent;color:var(--text-2);border:1.5px solid var(--line-2)}
+.btn.g{background:#06C755;color:#fff;font-size:16px;font-weight:600;padding:18px 20px}
+.link{display:block;width:100%;background:none;border:none;font-family:inherit;font-size:12.5px;
+  color:var(--text-3);text-align:center;padding:14px 0;cursor:pointer;text-decoration:underline;
+  text-underline-offset:3px}
+.mt{margin-top:22px}.mt-s{margin-top:12px}
+.hero{text-align:center;padding:30px 0 12px}
+.heroic{width:88px;height:88px;border-radius:26px;background:var(--surface-2);
+  display:grid;place-items:center;margin:0 auto 24px;font-size:38px;color:var(--text)}
+.cam{position:relative;width:100%;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#0a0a0a}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
 .cam canvas{display:none}
-.frame{position:absolute;inset:14%;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
-.frame::before,.frame::after{content:'';position:absolute;width:34px;height:34px;border:3px solid #fff}
+.frame{position:absolute;inset:13%;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.5);pointer-events:none}
+.frame::before,.frame::after{content:'';position:absolute;width:36px;height:36px;border:3px solid #fff}
 .frame::before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
 .frame::after{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 14px 0}
-.scanline{position:absolute;left:14%;right:14%;height:2px;background:#fff;opacity:.85;
-  animation:sl 2.2s cubic-bezier(.4,0,.6,1) infinite}
-@keyframes sl{0%,100%{top:16%}50%{top:82%}}
-
-/* points */
-.ptbox{text-align:center;padding:8px 0 4px}
-.ptn{font-size:76px;font-weight:600;letter-spacing:-.05em;line-height:1}
-.ptl{font-size:13px;color:var(--text-2);margin-top:2px}
-.pt0{color:var(--text-3)}
-
-/* rules table */
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:10.5px;font-weight:500;color:var(--text-3);text-transform:uppercase;
-  letter-spacing:.06em;padding:0 0 9px}
-th:last-child,td:last-child{text-align:right}
-td{padding:11px 0;border-top:1px solid var(--line)}
-td b{font-weight:600}
-.rule-in{width:76px;padding:8px 10px;border:1.5px solid var(--line-2);border-radius:8px;
-  font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;text-align:right}
-.rule-in:focus{border-color:var(--text)}
-
-/* history */
-.hitem{display:flex;justify-content:space-between;align-items:center;padding:13px 0;font-size:13px}
-.hitem+.hitem{border-top:1px solid var(--line)}
-.hitem .hb{font-weight:500}
-.hitem .hs{font-size:11px;color:var(--text-3);margin-top:3px}
-.empty{text-align:center;padding:46px 0;color:var(--text-3);font-size:13px}
-
-.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.chip{font-size:11px;padding:7px 12px;border-radius:var(--rp);border:1px solid var(--line-2);
-  background:transparent;color:var(--text-2);cursor:pointer;font-family:inherit;transition:.15s}
-.chip:hover{border-color:var(--text-3);color:var(--text)}
-.chip:active{transform:scale(.94)}
-.ring{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;
-  font-size:34px;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
-.ring.ok{background:var(--ok-bg);color:var(--ok)}
+.sl{position:absolute;left:13%;right:13%;height:2px;background:#fff;opacity:.9;
+  animation:sl 2.2s cubic-bezier(.4,0,.6,1) infinite;pointer-events:none}
+@keyframes sl{0%,100%{top:15%}50%{top:83%}}
+.camoff{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:32px;
+  color:#e4e4e7;font-size:12.5px;line-height:1.8}
+.ptn{font-size:80px;font-weight:600;letter-spacing:-.05em;line-height:1;text-align:center}
+.ptl{font-size:13px;color:var(--text-2);text-align:center;margin-top:2px}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:50px;
+  font-size:11.5px;font-weight:500;line-height:1}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.note{display:flex;gap:11px;padding:13px 15px;border-radius:10px;font-size:12.5px;line-height:1.6}
+.note.ok{background:var(--ok-bg);color:var(--ok)}
+.note .svgic{font-size:16px;margin-top:1px}
+.ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;
+  font-size:32px;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
 .ring.bad{background:var(--bad-bg);color:var(--bad)}
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-70px);
-  background:var(--text);color:var(--surface);padding:11px 20px;border-radius:var(--rp);font-size:13px;
-  z-index:99;transition:transform .3s cubic-bezier(.2,.8,.2,1);white-space:nowrap}
-.toast.on{transform:translateX(-50%) translateY(0)}
+#pick{display:none}
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="top"><b>BEANHOUND</b><span>BY GREYHOUND CAFÉ</span></div>
+  <main>
 
-<div class="top">
-  <button class="ib" id="back" onclick="goBack()" style="display:none">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="M19,11H9l3.29-3.29a1,1,0,0,0,0-1.42,1,1,0,0,0-1.41,0l-4.29,4.3A2,2,0,0,0,6,12H6a2,2,0,0,0,.59,1.4l4.29,4.3a1,1,0,1,0,1.41-1.42L9,13H19a1,1,0,0,0,0-2Z"/></svg>
-  </button>
-  <div class="brand">BEANHOUND<span>BY GREYHOUND CAFÉ</span></div>
-  <button class="ib" onclick="go('s-hist')" title="ประวัติ">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="M12,24C5.383,24,0,18.617,0,12S5.383,0,12,0s12,5.383,12,12-5.383,12-12,12ZM12,1C5.935,1,1,5.935,1,12s4.935,11,11,11,11-4.935,11-11S18.065,1,12,1Zm5,11.5c0-.276-.224-.5-.5-.5h-4.5V5.5c0-.276-.224-.5-.5-.5s-.5,.224-.5,.5v7c0,.276,.224,.5,.5,.5h5c.276,0,.5-.224,.5-.5Z"/></svg>
-  </button>
-  <button class="ib" onclick="go('s-rules')" title="กติกาแต้ม">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="m17.952 10.525c-.168-3.401-.743-5.453-.957-6.113-.53-.131-1.877-.433-3.741-.636-.22-.024-.397-.189-.438-.407-.207-1.122-.765-1.869-2.816-1.869s-2.61.747-2.816 1.869c-.04.217-.218.383-.438.407-1.864.204-3.211.505-3.741.636-.251.779-1.005 3.495-1.005 8.088 0 4.653.766 7.361 1.011 8.108.713.223 3.17.892 6.989.892 2.41 0 4.254-.267 5.376-.49.271-.057.534.121.588.393.054.271-.122.534-.393.588-1.183.235-3.116.509-5.571.509-4.641 0-7.425-.926-7.541-.965-.113-.038-.207-.117-.263-.222-.052-.096-1.245-2.408-1.245-8.813s1.194-8.717 1.245-8.813c.056-.105.15-.184.263-.222.093-.031 1.775-.585 4.383-.898.406-1.436 1.628-2.061 3.719-2.061s3.313.625 3.719 2.061c2.608.313 4.29.867 4.383.898.113.038.207.117.263.222.043.081.936 1.815 1.187 6.213.016.276-.194.512-.47.528z"/></svg>
-  </button>
-  <button class="ib" onclick="theme()" title="ธีม">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="m12,0C5.383,0,0,5.383,0,12s5.383,12,12,12,12-5.383,12-12S18.617,0,12,0Zm0,23V1c6.065,0,11,4.935,11,11s-4.935,11-11,11Z"/></svg>
-  </button>
-</div>
-
-<main>
-
-<!-- ══════ HOME ══════ -->
-<section class="scr on" id="s-home">
-  <div class="hero">
-    <div class="heroic">
-      <svg class="svgic" viewBox="0 0 24 24"><path d="M0,11H11V0H0V11ZM1,1H10V10H1V1Zm2,7h5V3H3v5Zm1-4h3v3h-3v-3ZM13,0V11h11V0H13Zm10,10H14V1h9V10Zm-2-7h-5v5h5V3Zm-1,4h-3v-3h3v3ZM0,24H11V13H0v11ZM1,14H10v9H1V14Zm2,7h5v-5H3v5Zm1-4h3v3h-3v-3Zm16-1h-3v-3h-4v4h3v3h-3v4h4v-3h4v-4h3v-4h-4v3Zm-6,0v-2h2v2h-2Zm2,7h-2v-2h2v2Zm4-3h-3v-3h3v3Zm1-6h2v2h-2v-2Z"/></svg>
+  <!-- ═══ 1 หน้าหลัก ═══ -->
+  <section class="scr on" id="s1">
+    <div class="hero">
+      <div class="heroic">
+        <svg class="svgic" viewBox="0 0 24 24"><path d="M0,11H11V0H0V11ZM1,1H10V10H1V1Zm2,7h5V3H3v5Zm1-4h3v3h-3v-3ZM13,0V11h11V0H13Zm10,10H14V1h9V10Zm-2-7h-5v5h5V3Zm-1,4h-3v-3h3v3ZM0,24H11V13H0v11ZM1,14H10v9H1V14Zm2,7h5v-5H3v5Zm1-4h3v3h-3v-3Zm16-1h-3v-3h-4v4h3v3h-3v4h4v-3h4v-4h3v-4h-4v3Zm-6,0v-2h2v2h-2Zm2,7h-2v-2h2v2Zm4-3h-3v-3h3v3Zm1-6h2v2h-2v-2Z"/></svg>
+      </div>
+      <h1>สแกนใบเสร็จ<br>เพื่อรับแต้ม</h1>
+      <p class="sub">สแกน QR ท้ายใบเสร็จ (QR ขอใบกำกับภาษี)<br>ระบบจะคำนวณแต้มให้อัตโนมัติ</p>
     </div>
-    <h1>สแกนใบเสร็จ<br>เพื่อรับแต้ม</h1>
-    <p class="sub">สแกน QR ท้ายใบเสร็จ (QR ขอใบกำกับภาษี)<br>ระบบจะคำนวณแต้มให้อัตโนมัติ</p>
-  </div>
+    <button class="btn p mt" onclick="openCam()">
+      <svg class="svgic" viewBox="0 0 24 24"><path d="M0,11H11V0H0V11ZM1,1H10V10H1V1Zm2,7h5V3H3v5Zm1-4h3v3h-3v-3ZM13,0V11h11V0H13Zm10,10H14V1h9V10Zm-2-7h-5v5h5V3Zm-1,4h-3v-3h3v3ZM0,24H11V13H0v11ZM1,14H10v9H1V14Zm2,7h5v-5H3v5Zm1-4h3v3h-3v-3Z"/></svg>
+      สแกน QR บนใบเสร็จ
+    </button>
+  </section>
 
-  <button class="btn p mt-l" onclick="openCam()">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="M0,11H11V0H0V11ZM1,1H10V10H1V1Zm2,7h5V3H3v5Zm1-4h3v3h-3v-3ZM13,0V11h11V0H13Zm10,10H14V1h9V10Zm-2-7h-5v5h5V3Zm-1,4h-3v-3h3v3ZM0,24H11V13H0v11ZM1,14H10v9H1V14Zm2,7h5v-5H3v5Zm1-4h3v3h-3v-3Z"/></svg>
-    สแกน QR บนใบเสร็จ
-  </button>
+  <!-- ═══ 2 กล้อง ═══ -->
+  <section class="scr" id="s2">
+    <h2>เล็ง QR ให้อยู่ในกรอบ</h2>
+    <p class="sub" style="text-align:left">QR อยู่ท้ายใบเสร็จ ใต้ข้อความ "กรุณาสแกน QR Code นี้"</p>
+    <div class="cam mt">
+      <video id="vid" playsinline muted autoplay></video>
+      <canvas id="cv"></canvas>
+      <div class="frame" id="fr"></div>
+      <div class="sl" id="slz"></div>
+      <div class="camoff" id="camoff" style="display:none"></div>
+    </div>
+    <button class="link" onclick="document.getElementById('pick').click()">สแกนไม่ได้ — ถ่ายรูป QR แทน</button>
+    <input type="file" id="pick" accept="image/*" capture="environment" onchange="fromFile(this)">
+    <button class="btn s" onclick="go(1)">ยกเลิก</button>
+  </section>
 
-  <div class="div"></div>
-
-  <label class="lbl">หรือวางลิงก์จาก QR</label>
-  <input class="inp" id="manual" placeholder="https://greyhoundwebservice.net/cmgh-etax/..." oninput="chkManual()">
-  <div class="chips">
-    <button class="chip" onclick="demo('E/2017/0101832/6400/2026-09-08')">ตัวอย่าง ฿64</button>
-    <button class="chip" onclick="demo('E/2017/0101901/12000/2026-09-09')">ตัวอย่าง ฿120</button>
-    <button class="chip" onclick="demo('E/2017/0101902/4500/2026-09-09')">ตัวอย่าง ฿45</button>
-  </div>
-  <button class="btn s mt-s" id="btnManual" disabled onclick="parseInput(document.getElementById('manual').value)">ตรวจสอบใบเสร็จ</button>
-
-  <p class="hint mt-l">1 ใบเสร็จ รับแต้มได้ 1 ครั้งเท่านั้น</p>
-</section>
-
-<!-- ══════ CAMERA ══════ -->
-<section class="scr" id="s-cam">
-  <h2>เล็ง QR ให้อยู่ในกรอบ</h2>
-  <p class="sub">QR อยู่ท้ายใบเสร็จ ใต้ข้อความ "กรุณาสแกน QR Code นี้"</p>
-  <div class="cam mt">
-    <video id="vid" playsinline muted></video>
-    <canvas id="cv"></canvas>
-    <div class="frame"></div>
-    <div class="scanline"></div>
-  </div>
-  <div class="note warn mt" id="camnote" style="display:none">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="m12.5,15h-1V5h1v10Zm-.5,2.5c-.414,0-.75.336-.75.75s.336.75.75.75.75-.336.75-.75-.336-.75-.75-.75Z"/></svg>
-    <span id="camnotetx"></span>
-  </div>
-  <button class="btn s mt" onclick="closeCam();go('s-home')">ยกเลิก</button>
-</section>
-
-<!-- ══════ RESULT ══════ -->
-<section class="scr" id="s-ok">
-  <div class="center" style="padding:2px 0 14px">
-    <span class="tag ok">
-      <svg class="svgic" viewBox="0 0 24 24"><path d="M20.858,7.152c.192,.197,.188,.515-.011,.706l-9.792,9.5c-.412,.412-.966,.642-1.556,.642s-1.144-.229-1.561-.646L3.158,12.864c-.202-.188-.212-.505-.024-.707,.188-.202,.505-.213,.707-.024l4.75,4.5c.446,.446,1.176,.446,1.617,.009L20,7.142c.198-.192,.515-.188,.707,.011Z"/></svg>
-      พบข้อมูลใบเสร็จ
-    </span>
-  </div>
-
-  <div class="card">
-    <div class="row" style="border:0;padding-top:0"><span class="k">ใบกำกับภาษีอย่างย่อเลขที่</span><span class="v" id="o-no">—</span></div>
-    <div class="row"><span class="k">สาขาที่ออก</span><span class="v" id="o-shop">—</span></div>
-    <div class="row"><span class="k">วันที่ออก</span><span class="v" id="o-date">—</span></div>
-    <div class="row"><span class="k">ยอดเงิน</span><span class="v" id="o-amt">—</span></div>
-  </div>
-
-  <div class="card mark mt-s">
-    <div class="ptbox">
-      <div class="lbl" style="margin-bottom:10px">แต้มที่จะได้รับ</div>
+  <!-- ═══ 3 ผลลัพธ์ ═══ -->
+  <section class="scr" id="s3">
+    <div style="text-align:center;padding:2px 0 14px">
+      <span class="tag ok">
+        <svg class="svgic" viewBox="0 0 24 24"><path d="M20.858,7.152c.192,.197,.188,.515-.011,.706l-9.792,9.5c-.412,.412-.966,.642-1.556,.642s-1.144-.229-1.561-.646L3.158,12.864c-.202-.188-.212-.505-.024-.707,.188-.202,.505-.213,.707-.024l4.75,4.5c.446,.446,1.176,.446,1.617,.009L20,7.142c.198-.192,.515-.188,.707,.011Z"/></svg>
+        พบข้อมูลใบเสร็จ
+      </span>
+    </div>
+    <div class="card">
+      <div class="row" style="border:0;padding-top:0"><span class="k">เลขที่ใบเสร็จ</span><span class="v" id="o-no">—</span></div>
+      <div class="row"><span class="k">สาขา</span><span class="v" id="o-shop">—</span></div>
+      <div class="row"><span class="k">วันที่</span><span class="v" id="o-date">—</span></div>
+      <div class="row"><span class="k">ยอดเงิน</span><span class="v" id="o-amt">—</span></div>
+    </div>
+    <div class="card mark mt-s">
+      <span class="lbl" style="text-align:center;margin-bottom:12px">แต้มที่จะได้รับ</span>
       <div class="ptn" id="o-pt">0</div>
-      <div class="ptl" id="o-ptl">แต้ม</div>
+      <div class="ptl">แต้ม</div>
+      <div class="note ok" style="margin-top:16px">
+        <svg class="svgic" viewBox="0 0 24 24"><path d="m12,0C5.383,0,0,5.383,0,12s5.383,12,12,12,12-5.383,12-12S18.617,0,12,0Zm0,23C5.935,23,1,18.065,1,12S5.935,1,12,1s11,4.935,11,11-4.935,11-11,11Z"/><path d="M17.5,8.5l-6.9,6.9-3.1-3.1-.7,.7,3.8,3.8,7.6-7.6-.7-.7Z"/></svg>
+        <span id="o-rule">—</span>
+      </div>
     </div>
-    <div class="note ok" style="margin-top:14px" id="o-rule">
-      <svg class="svgic" viewBox="0 0 24 24"><path d="m12,0C5.383,0,0,5.383,0,12s5.383,12,12,12,12-5.383,12-12S18.617,0,12,0Zm0,23C5.935,23,1,18.065,1,12S5.935,1,12,1s11,4.935,11,11-4.935,11-11,11Z"/><path d="M17.5,8.5l-6.9,6.9-3.1-3.1-.7,.7,3.8,3.8,7.6-7.6-.7-.7Z"/></svg>
-      <span id="o-ruletx">—</span>
+    <a class="btn g mt" id="o-claim" href="#" target="_blank" rel="noopener">
+      <svg class="svgic" viewBox="0 0 24 24"><path d="M23.855,8.951c-.387-1.185-1.441-1.951-2.688-1.951h-4.807l-1.668-5.037c-.383-1.193-1.44-1.963-2.693-1.963s-2.31,.771-2.691,1.959l-1.67,5.041H2.833c-1.246,0-2.302,.766-2.689,1.951-.387,1.184,.013,2.425,1.019,3.161l4.041,2.954-1.535,4.749c-.385,1.191,.022,2.433,1.038,3.164,.996,.719,2.333,.713,3.33-.016l3.963-2.914,3.963,2.914c.509,.373,1.093,.559,1.677,.559,.575,0,1.15-.181,1.653-.543,1.015-.731,1.423-1.973,1.038-3.164l-1.535-4.749,4.041-2.954c1.006-.736,1.406-1.978,1.019-3.161Z"/></svg>
+      <span id="o-claimtx">กดรับแต้ม</span>
+    </a>
+    <button class="btn s mt-s" onclick="go(1)">สแกนใบใหม่</button>
+  </section>
+
+  <!-- ═══ 4 ผิดพลาด ═══ -->
+  <section class="scr" id="s4">
+    <div style="text-align:center;padding:40px 0 28px">
+      <div class="ring bad">
+        <svg class="svgic" viewBox="0 0 24 24"><path d="m12.5,15h-1V5h1v10Zm-.5,2.5c-.414,0-.75.336-.75.75s.336.75.75.75.75-.336.75-.75-.336-.75-.75-.75Zm12-5.5c0,6.617-5.383,12-12,12S0,18.617,0,12,5.383,0,12,0s12,5.383,12,12Zm-1,0c0-6.065-4.935-11-11-11S1,5.935,1,12s4.935,11,11,11,11-4.935,11-11Z"/></svg>
+      </div>
+      <h2 id="e-t" style="text-align:center">ไม่สามารถรับแต้มได้</h2>
+      <p class="sub" style="max-width:290px;margin:9px auto 0" id="e-m">—</p>
     </div>
-  </div>
+    <button class="btn p" onclick="go(1)">กลับหน้าหลัก</button>
+  </section>
 
-  <a class="btn g mt" id="o-claim" href="#" target="_blank" rel="noopener" onclick="claim()">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="M23.855,8.951c-.387-1.185-1.441-1.951-2.688-1.951h-4.807l-1.668-5.037c-.383-1.193-1.44-1.963-2.693-1.963s-2.31,.771-2.691,1.959l-1.67,5.041H2.833c-1.246,0-2.302,.766-2.689,1.951-.387,1.184,.013,2.425,1.019,3.161l4.041,2.954-1.535,4.749c-.385,1.191,.022,2.433,1.038,3.164,.996,.719,2.333,.713,3.33-.016l3.963-2.914,3.963,2.914c.509,.373,1.093,.559,1.677,.559,.575,0,1.15-.181,1.653-.543,1.015-.731,1.423-1.973,1.038-3.164l-1.535-4.749,4.041-2.954c1.006-.736,1.406-1.978,1.019-3.161Z"/></svg>
-    <span id="o-claimtx">กดรับแต้ม</span>
-  </a>
-  <p class="hint mt-s">กดปุ่มแล้วจะเปิด LINE เพื่อรับแต้มอัตโนมัติ</p>
-  <button class="btn s mt-s" onclick="go('s-home')">ยกเลิก</button>
-</section>
-
-<!-- ══════ REJECT ══════ -->
-<section class="scr" id="s-no">
-  <div class="center" style="padding:34px 0 26px">
-    <div class="ring bad">
-      <svg class="svgic" viewBox="0 0 24 24"><path d="m12.5,15h-1V5h1v10Zm-.5,2.5c-.414,0-.75.336-.75.75s.336.75.75.75.75-.336.75-.75-.336-.75-.75-.75Zm12-5.5c0,6.617-5.383,12-12,12S0,18.617,0,12,5.383,0,12,0s12,5.383,12,12Zm-1,0c0-6.065-4.935-11-11-11S1,5.935,1,12s4.935,11,11,11,11-4.935,11-11Z"/></svg>
-    </div>
-    <h2 id="n-title">ไม่สามารถรับแต้มได้</h2>
-    <p class="sub" style="max-width:290px;margin:9px auto 0" id="n-msg">—</p>
-  </div>
-  <div class="card flat" id="n-detail" style="display:none">
-    <div class="row" style="border:0;padding-top:0"><span class="k">เลขที่ใบเสร็จ</span><span class="v" id="n-no">—</span></div>
-    <div class="row"><span class="k">รับแต้มไปแล้วเมื่อ</span><span class="v" id="n-when">—</span></div>
-    <div class="row"><span class="k">แต้มที่ได้รับ</span><span class="v" id="n-pt">—</span></div>
-  </div>
-  <button class="btn p mt" onclick="go('s-home')">กลับหน้าหลัก</button>
-</section>
-
-<!-- ══════ DONE ══════ -->
-<section class="scr" id="s-done">
-  <div class="center" style="padding:34px 0 24px">
-    <div class="ring ok">
-      <svg class="svgic" viewBox="0 0 24 24"><path d="M20.858,7.152c.192,.197,.188,.515-.011,.706l-9.792,9.5c-.412,.412-.966,.642-1.556,.642s-1.144-.229-1.561-.646L3.158,12.864c-.202-.188-.212-.505-.024-.707,.188-.202,.505-.213,.707-.024l4.75,4.5c.446,.446,1.176,.446,1.617,.009L20,7.142c.198-.192,.515-.188,.707,.011Z"/></svg>
-    </div>
-    <h2>ส่งคุณไปรับแต้มแล้ว</h2>
-    <p class="sub" style="max-width:300px;margin:9px auto 0">
-      หากไม่ได้เปิด LINE อัตโนมัติ กดปุ่มด้านล่างอีกครั้ง
-    </p>
-  </div>
-  <div class="card flat">
-    <div class="row" style="border:0;padding-top:0"><span class="k">ใบเสร็จ</span><span class="v" id="d-no">—</span></div>
-    <div class="row"><span class="k">ยอดเงิน</span><span class="v" id="d-amt">—</span></div>
-    <div class="row"><span class="k">แต้ม</span><span class="v" id="d-pt">—</span></div>
-  </div>
-  <a class="btn g mt" id="d-again" href="#" target="_blank" rel="noopener">เปิด LINE อีกครั้ง</a>
-  <button class="btn s mt-s" onclick="go('s-home')">สแกนใบถัดไป</button>
-</section>
-
-<!-- ══════ RULES ══════ -->
-<section class="scr" id="s-rules">
-  <h2>กติกาการรับแต้ม</h2>
-  <p class="sub">แก้ตัวเลขได้ทันที เพื่อทดลองก่อนใช้จริง</p>
-
-  <div class="card mt">
-    <table>
-      <thead><tr><th>ยอดซื้อตั้งแต่ (บาท)</th><th>ได้รับ</th></tr></thead>
-      <tbody id="rulebody"></tbody>
-    </table>
-  </div>
-
-  <div class="note warn mt-s">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="m12.5,15h-1V5h1v10Zm-.5,2.5c-.414,0-.75.336-.75.75s.336.75.75.75.75-.336.75-.75-.336-.75-.75-.75Z"/></svg>
-    <span>LINE มี QR แจกแต้มเท่าที่สร้างไว้เท่านั้น ตอนนี้มี 1 และ 2 แต้ม — ถ้าจะใช้ระดับอื่นต้องสร้าง QR เพิ่มใน LINE OA Manager ก่อน</span>
-  </div>
-
-  <div class="lbl mt-l">ลิงก์ QR แจกแต้ม (LINE)</div>
-  <div class="card flat">
-    <div class="row" style="border:0;padding-top:0"><span class="k">1 แต้ม</span><span class="v" style="font-size:11.5px">u.lin.ee/nU7bYqT</span></div>
-    <div class="row"><span class="k">2 แต้ม</span><span class="v" style="font-size:11.5px">u.lin.ee/VGuytFl</span></div>
-  </div>
-
-  <button class="btn p mt-l" onclick="go('s-home')">เสร็จสิ้น</button>
-</section>
-
-<!-- ══════ HISTORY ══════ -->
-<section class="scr" id="s-hist">
-  <h2>ใบเสร็จที่รับแต้มแล้ว</h2>
-  <p class="sub">ใช้กันการนำใบเสร็จเดิมมารับแต้มซ้ำ</p>
-  <div class="card mt" id="histwrap">
-    <div class="empty" id="histempty">ยังไม่มีรายการ</div>
-    <div id="histlist"></div>
-  </div>
-  <div class="note bad mt-s">
-    <svg class="svgic" viewBox="0 0 24 24"><path d="m12.5,15h-1V5h1v10Zm-.5,2.5c-.414,0-.75.336-.75.75s.336.75.75.75.75-.336.75-.75-.336-.75-.75-.75Z"/></svg>
-    <span><b>ตอนนี้เก็บในหน่วยความจำชั่วคราว</b> — ปิดหน้าเว็บแล้วหาย ของจริงต้องย้ายไปเก็บที่ฐานข้อมูลฝั่ง server</span>
-  </div>
-  <button class="btn s mt" onclick="go('s-home')">กลับหน้าหลัก</button>
-</section>
-
-</main>
+  </main>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════ CONFIG ═══════════ */
-const LINE_LINKS={1:'https://u.lin.ee/nU7bYqT',2:'https://u.lin.ee/VGuytFl'};
-// ระดับแต้ม: ยอดตั้งแต่ X บาท → ได้ Y แต้ม (เรียงจากมากไปน้อย)
-let RULES=[{min:100,pt:2},{min:50,pt:1},{min:0,pt:0}];
-const claimed=new Map();   // billKey -> {no,amt,pt,at}   ← ของจริงย้ายไป backend
-let current=null;
+/* ───────── ตั้งค่า ───────── */
+const LINE_LINKS = {1:'https://u.lin.ee/nU7bYqT', 2:'https://u.lin.ee/VGuytFl'};
+const RULES      = [{min:100,pt:2},{min:50,pt:1}];      // ยอดตั้งแต่ X บาท → Y แต้ม (มาก→น้อย)
+const SHOPS      = {'2017':'BEPT20-Beanhound PT20'};
 
-/* ═══════════ NAV ═══════════ */
-let hist=[];
-function go(id,push=true){
-  const cur=document.querySelector('.scr.on');
-  if(cur&&push&&cur.id!==id)hist.push(cur.id);
+/* ───────── helper ───────── */
+const $=id=>document.getElementById(id);
+function go(n){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  document.getElementById('back').style.display=(id==='s-home')?'none':'grid';
-  if(id!=='s-cam')closeCam();
-  if(id==='s-hist')renderHist();
-  if(id==='s-rules')renderRules();
+  $('s'+n).classList.add('on');
+  if(n!==2)stopCam();
   window.scrollTo(0,0);
 }
-function goBack(){go(hist.pop()||'s-home',false)}
-function theme(){const h=document.documentElement;h.dataset.t=h.dataset.t==='dark'?'light':'dark'}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'),2200)}
+const money=n=>n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const thDate=iso=>{const[y,m,d]=iso.split('-');return `${d}/${m}/${+y+543}`};
+const calc=a=>RULES.find(r=>a>=r.min)||null;
+const parseEtax=u=>{
+  const m=String(u||'').match(/cmgh-etax\/[A-Za-z]+\/([A-Z0-9]+)\/(\d+)\/(\d+)\/(\d+)\/(\d{4}-\d{2}-\d{2})/i);
+  return m?{brand:m[1],shop:m[2],no:m[3],amount:+m[4]/100,date:m[5]}:null;
+};
+function err(t,m){$('e-t').textContent=t;$('e-m').textContent=m;go(4)}
 
-/* ═══════════ PARSE e-Tax URL ═══════════ */
-// /cmgh-etax/fullvat/{brand}/{shop}/{billno}/{amount*100}/{yyyy-mm-dd}
-function parseEtax(url){
-  if(!url)return null;
-  const m=String(url).match(/cmgh-etax\/(?:fullvat|Request)\/([A-Z0-9]+)\/(\d+)\/(\d+)\/(\d+)\/(\d{4}-\d{2}-\d{2})/i);
-  if(!m)return null;
-  return{brand:m[1],shop:m[2],no:m[3],amount:parseInt(m[4],10)/100,date:m[5],raw:url};
+/* ───────── แสดงผล ───────── */
+function show(d){
+  stopCam();
+  const r=calc(d.amount);
+  if(!r){err('ยอดซื้อยังไม่ถึงเกณฑ์',`ยอด ฿${money(d.amount)} ยังไม่ถึงขั้นต่ำ ${RULES[RULES.length-1].min} บาท`);return}
+  if(!LINE_LINKS[r.pt]){err('ยังไม่พร้อมให้บริการ','กรุณาติดต่อพนักงานหน้าร้าน');return}
+  $('o-no').textContent   = d.no;
+  $('o-shop').textContent = SHOPS[d.shop]||('สาขา '+d.shop);
+  $('o-date').textContent = thDate(d.date);
+  $('o-amt').textContent  = '฿'+money(d.amount);
+  $('o-pt').textContent   = r.pt;
+  $('o-rule').textContent = `ยอดซื้อตั้งแต่ ฿${r.min} ขึ้นไป รับ ${r.pt} แต้ม`;
+  $('o-claimtx').textContent = `กดรับ ${r.pt} แต้ม`;
+  $('o-claim').href = LINE_LINKS[r.pt];
+  go(3);
 }
-const SHOPS={'2017':'BEPT20-Beanhound PT20'};
-function shopName(c){return SHOPS[c]||('สาขา '+c)}
-function thDate(iso){
-  const[y,mo,d]=iso.split('-');
-  return `${d}/${mo}/${parseInt(y,10)+543}`;
-}
-function money(n){return n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function calcPoint(a){
-  for(const r of RULES){if(a>=r.min)return r}
-  return{min:0,pt:0};
-}
-
-/* ═══════════ FLOW ═══════════ */
-function demo(p){document.getElementById('manual').value='https://greyhoundwebservice.net/cmgh-etax/fullvat/'+p;chkManual()}
-function chkManual(){
-  document.getElementById('btnManual').disabled=!parseEtax(document.getElementById('manual').value);
-}
-function parseInput(url){
-  const d=parseEtax(url);
-  if(!d){reject('ไม่ใช่ QR ของใบเสร็จ','กรุณาสแกน QR ที่อยู่ท้ายใบเสร็จ ใต้ข้อความขอใบกำกับภาษีอิเล็กทรอนิกส์');return}
-  showReceipt(d);
-}
-function billKey(d){return `${d.brand}-${d.shop}-${d.no}-${d.date}`}
-
-function showReceipt(d){
-  closeCam();
-  const key=billKey(d);
-  if(claimed.has(key)){
-    const c=claimed.get(key);
-    document.getElementById('n-title').textContent='ใบเสร็จนี้รับแต้มไปแล้ว';
-    document.getElementById('n-msg').textContent='ใบเสร็จ 1 ใบ รับแต้มได้เพียงครั้งเดียว';
-    document.getElementById('n-detail').style.display='block';
-    document.getElementById('n-no').textContent=c.no;
-    document.getElementById('n-when').textContent=c.at;
-    document.getElementById('n-pt').textContent=c.pt+' แต้ม';
-    go('s-no');return;
-  }
-  const r=calcPoint(d.amount);
-  if(r.pt<=0){
-    reject('ยอดซื้อยังไม่ถึงเกณฑ์',`ยอด ฿${money(d.amount)} ยังไม่ถึงขั้นต่ำ ${RULES.filter(x=>x.pt>0).slice(-1)[0].min} บาท`);
-    return;
-  }
-  if(!LINE_LINKS[r.pt]){
-    reject('ยังไม่พร้อมให้บริการ','กรุณาติดต่อพนักงานหน้าร้าน');return;
-  }
-  current={...d,pt:r.pt,rule:r};
-  document.getElementById('o-no').textContent=d.no;
-  document.getElementById('o-shop').textContent=shopName(d.shop);
-  document.getElementById('o-date').textContent=thDate(d.date);
-  document.getElementById('o-amt').textContent='฿'+money(d.amount);
-  document.getElementById('o-pt').textContent=r.pt;
-  document.getElementById('o-ruletx').textContent=`ยอดซื้อตั้งแต่ ฿${r.min} ขึ้นไป รับ ${r.pt} แต้ม`;
-  document.getElementById('o-claimtx').textContent=`กดรับ ${r.pt} แต้ม`;
-  document.getElementById('o-claim').href=LINE_LINKS[r.pt];
-  go('s-ok');
-}
-function reject(t,m){
-  document.getElementById('n-title').textContent=t;
-  document.getElementById('n-msg').textContent=m;
-  document.getElementById('n-detail').style.display='none';
-  go('s-no');
-}
-function claim(){
-  if(!current)return;
-  const now=new Date();
-  const at=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+' '+
-           String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  claimed.set(billKey(current),{no:current.no,amt:current.amount,pt:current.pt,at});
-  document.getElementById('d-no').textContent=current.no;
-  document.getElementById('d-amt').textContent='฿'+money(current.amount);
-  document.getElementById('d-pt').textContent=current.pt+' แต้ม';
-  document.getElementById('d-again').href=LINE_LINKS[current.pt];
-  setTimeout(()=>go('s-done'),300);
+function handle(txt){
+  const d=parseEtax(txt);
+  if(!d){err('ไม่ใช่ QR ของใบเสร็จ','กรุณาสแกน QR ที่อยู่ท้ายใบเสร็จ ใต้ข้อความขอใบกำกับภาษีอิเล็กทรอนิกส์');return}
+  show(d);
 }
 
-/* ═══════════ CAMERA + jsQR ═══════════ */
-let stream=null,rafId=null;
+/* ───────── กล้อง ───────── */
+let stream=null,raf=null,det=null;
+if('BarcodeDetector' in window){try{det=new BarcodeDetector({formats:['qr_code']})}catch(e){det=null}}
+
 async function openCam(){
-  go('s-cam');
-  const note=document.getElementById('camnote'),tx=document.getElementById('camnotetx');
-  note.style.display='none';
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});
-    const v=document.getElementById('vid');
-    v.srcObject=stream;await v.play();
-    tick();
-  }catch(e){
-    note.style.display='flex';
-    tx.textContent='เปิดกล้องไม่ได้ ('+(e.name||'error')+') — หากอยู่ในหน้าตัวอย่าง ให้ใช้ช่อง "วางลิงก์จาก QR" ในหน้าหลักแทน';
+  go(2);
+  $('camoff').style.display='none';
+  $('fr').style.display='';$('slz').style.display='';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camFail('เบราว์เซอร์นี้ไม่รองรับกล้อง');return}
+  let s=null;
+  for(const c of [{video:{facingMode:{exact:'environment'}}},{video:{facingMode:'environment'}},{video:true}]){
+    try{s=await navigator.mediaDevices.getUserMedia(c);break}catch(e){}
   }
+  if(!s){camFail('เปิดกล้องไม่ได้');return}
+  stream=s;
+  const v=$('vid');v.srcObject=s;
+  try{await v.play()}catch(e){}
+  loop();
 }
-function closeCam(){
-  if(rafId){cancelAnimationFrame(rafId);rafId=null}
+function camFail(msg){
+  $('camoff').innerHTML=msg+'<br><br>กด <b>"ถ่ายรูป QR แทน"</b><br>ด้านล่าง';
+  $('camoff').style.display='grid';
+  $('fr').style.display='none';$('slz').style.display='none';
+}
+function stopCam(){
+  if(raf){cancelAnimationFrame(raf);raf=null}
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
 }
-function tick(){
-  const v=document.getElementById('vid'),c=document.getElementById('cv');
-  if(v.readyState===v.HAVE_ENOUGH_DATA&&typeof jsQR!=='undefined'){
+async function loop(){
+  const v=$('vid'),c=$('cv');
+  if(v.readyState>=2&&v.videoWidth){
     c.width=v.videoWidth;c.height=v.videoHeight;
-    const ctx=c.getContext('2d',{willReadFrequently:true});
-    ctx.drawImage(v,0,0,c.width,c.height);
-    const img=ctx.getImageData(0,0,c.width,c.height);
-    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
-    if(code&&code.data){
-      const d=parseEtax(code.data);
-      if(d){closeCam();showReceipt(d);return}
-      else{toast('QR นี้ไม่ใช่ใบเสร็จ')}
+    const x=c.getContext('2d',{willReadFrequently:true});
+    x.drawImage(v,0,0,c.width,c.height);
+    let txt=null;
+    if(det){try{const r=await det.detect(c);if(r.length)txt=r[0].rawValue}catch(e){}}
+    if(!txt&&typeof jsQR!=='undefined'){
+      const g=x.getImageData(0,0,c.width,c.height);
+      const q=jsQR(g.data,g.width,g.height,{inversionAttempts:'attemptBoth'});
+      if(q)txt=q.data;
     }
+    if(txt){handle(txt);return}
   }
-  rafId=requestAnimationFrame(tick);
+  raf=requestAnimationFrame(loop);
 }
 
-/* ═══════════ RENDER ═══════════ */
-function renderRules(){
-  const b=document.getElementById('rulebody');b.innerHTML='';
-  RULES.filter(r=>r.pt>0).forEach((r,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><input class="rule-in" type="number" value="${r.min}" data-i="${i}" data-f="min"> บาท</td>
-                  <td><b><input class="rule-in" type="number" value="${r.pt}" data-i="${i}" data-f="pt" style="width:52px"></b> แต้ม</td>`;
-    b.appendChild(tr);
-  });
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td style="color:var(--text-3)">ต่ำกว่าเกณฑ์</td><td style="color:var(--text-3)">0 แต้ม</td>`;
-  b.appendChild(tr);
-  b.querySelectorAll('.rule-in').forEach(el=>el.addEventListener('change',()=>{
-    const act=RULES.filter(r=>r.pt>0);
-    act[+el.dataset.i][el.dataset.f]=+el.value||0;
-    RULES=[...act].sort((a,b2)=>b2.min-a.min).concat([{min:0,pt:0}]);
-    renderRules();toast('บันทึกกติกาแล้ว');
-  }));
+/* ───────── ถ่ายรูปแทน ───────── */
+function fromFile(el){
+  const f=el.files&&el.files[0];if(!f)return;
+  const img=new Image();
+  img.onload=async()=>{
+    const MAX=1400,sc=Math.min(1,MAX/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');
+    c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+    const x=c.getContext('2d',{willReadFrequently:true});
+    x.drawImage(img,0,0,c.width,c.height);
+    let txt=null;
+    if(det){try{const r=await det.detect(c);if(r.length)txt=r[0].rawValue}catch(e){}}
+    if(!txt&&typeof jsQR!=='undefined'){
+      const g=x.getImageData(0,0,c.width,c.height);
+      let q=jsQR(g.data,g.width,g.height,{inversionAttempts:'attemptBoth'});
+      if(!q){
+        const d2=x.getImageData(0,0,c.width,c.height);
+        for(let i=0;i<d2.data.length;i+=4){
+          const v=(d2.data[i]*.3+d2.data[i+1]*.59+d2.data[i+2]*.11)>128?255:0;
+          d2.data[i]=d2.data[i+1]=d2.data[i+2]=v;
+        }
+        q=jsQR(d2.data,d2.width,d2.height,{inversionAttempts:'attemptBoth'});
+      }
+      if(q)txt=q.data;
+    }
+    el.value='';
+    if(txt)handle(txt);
+    else err('อ่าน QR ไม่ได้','ลองถ่ายใหม่ให้ QR อยู่กลางภาพ ชัด และมีแสงพอ');
+  };
+  img.onerror=()=>{el.value='';err('เปิดรูปไม่ได้','กรุณาลองใหม่อีกครั้ง')};
+  img.src=URL.createObjectURL(f);
 }
-function renderHist(){
-  const l=document.getElementById('histlist'),e=document.getElementById('histempty');
-  l.innerHTML='';
-  if(claimed.size===0){e.style.display='block';return}
-  e.style.display='none';
-  [...claimed.values()].reverse().forEach(c=>{
-    const d=document.createElement('div');d.className='hitem';
-    d.innerHTML=`<div><div class="hb">${c.no}</div><div class="hs">${c.at} · ฿${money(c.amt)}</div></div>
-                 <span class="tag ok">+${c.pt} แต้ม</span>`;
-    l.appendChild(d);
-  });
-}
-renderRules();
 </script>
 </body>
 </html>
