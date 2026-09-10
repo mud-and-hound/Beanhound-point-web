@@ -233,29 +233,56 @@ async function readQR(img){
 }
 
 /* ───────── OCR + แยกรายการ ───────── */
-// กรองบรรทัดที่ไม่ใช่สินค้า — เผื่อ OCR อ่าน SubTotal เพี้ยนไว้หลายแบบ
-const SKIP=/s\s*u\s*[bp8]\s*[^a-z0-9]{0,3}\s*[lt1i]\s*o\s*t|subtotal|grand|^\s*total|vatable|^vat\b|cash|change|discount|stamp|prompt|included|thank|nice\s*day|grateful|invoice|greyhound|beanhound|shop|staff|^tax|http|print|to\s*go|^rd\b|have\s*a/i;
-const ITEM=/^(.{2,45}?)\s+(\d{1,2})\s+(\d{1,4}[.,\s]\d{2})\s*(VS|VC|V)?\s*$/i;
+// ── แก้ตัวอักษรที่ OCR สับสนกับตัวเลข แล้วเติมจุดทศนิยมให้ถ้าหาย
+const NUMFIX={'O':'0','o':'0','Q':'0','D':'0','l':'1','I':'1','i':'1','|':'1',
+              'g':'9','q':'9','S':'5','s':'5','B':'8','Z':'2','z':'2','G':'6','b':'6','T':'7'};
+function toPrice(tok){
+  let t=String(tok).split('').map(c=>NUMFIX[c]!==undefined?NUMFIX[c]:c).join('');
+  t=t.replace(/[^0-9.,]/g,'').replace(/,/g,'.');
+  const dots=(t.match(/\./g)||[]).length;
+  if(dots>1)t=t.replace(/\.(?=.*\.)/g,'');
+  if(t.indexOf('.')<0){
+    if(t.length<3)return null;
+    t=t.slice(0,-2)+'.'+t.slice(-2);
+  }
+  const v=parseFloat(t);
+  return (isFinite(v)&&v>=0&&v<100000)?v:null;
+}
+const SUBPAT=/s\s*u\s*[bp8]\s*[^a-z0-9]{0,3}\s*[lt1i]\s*o\s*t/i;
+const SKIP=new RegExp(SUBPAT.source+'|grand|^\\s*total|vatable|^vat\\b|cash|change|discount|stamp|prompt|included|thank|nice\\s*day|grateful|invoice|greyhound|beanhound|shop|staff|^tax|http|print|to\\s*go|have\\s*a','i');
+const ITEM=/^(.{2,45}?)\s+(\d{1,2})\s+([0-9OoQDlIigqSsBZzGbT.,]{2,9})\s*(VS|VC|V|VG|V5)?\s*$/i;
+const SUBT=new RegExp(SUBPAT.source+'\\w*\\s+(\\d{1,2})\\s+([0-9OoQDlIigqSsBZzGbT.,\\s]{2,10})$','i');
 
-function parseItems(text){
-  const out=[];
-  for(let raw of text.split('\n')){
-    let ln=raw.replace(/[|;'"!]/g,' ').replace(/\s+/g,' ').trim();
-    if(ln.length<5||SKIP.test(ln))continue;
+function parseReceipt(text){
+  const items=[];let sub=null;
+  for(const raw of text.split('\n')){
+    const ln=raw.replace(/[|;'"]/g,' ').replace(/\s+/g,' ').trim();
+    if(ln.length<5)continue;
+    const ms=SUBT.exec(ln);
+    if(ms){sub={qty:parseInt(ms[1],10),amount:toPrice(ms[2])};continue}
+    if(SKIP.test(ln))continue;
     const m=ITEM.exec(ln);
     if(!m)continue;
     const name=m[1].replace(/[^A-Za-z0-9ก-๛\-\. ]/g,'').trim();
     if(name.length<3||!/[A-Za-zก-๛]{3}/.test(name))continue;
-    const qty=parseInt(m[2],10);
-    const price=parseFloat(m[3].replace(/[\s,]/,'.'));
-    if(!qty||qty>20||isNaN(price))continue;
-    out.push({name,qty,price,cup:price>=CUP_MIN_PRICE});
+    const qty=parseInt(m[2],10),price=toPrice(m[3]);
+    if(!qty||qty>20||price===null)continue;
+    items.push({name,qty,price,cup:price>=CUP_MIN_PRICE});
   }
-  return out;
+  return {items,sub};
+}
+// ตรวจว่าอ่านครบไหม โดยเทียบกับบรรทัด SubTotal
+function verify(items,sub){
+  if(!sub||sub.amount===null)return 'ไม่พบยอดรวมในใบเสร็จ';
+  const q=items.reduce((s,i)=>s+i.qty,0);
+  const a=items.reduce((s,i)=>s+i.qty*i.price,0);
+  if(q!==sub.qty)return 'จำนวนรายการไม่ตรงกับใบเสร็จ';
+  if(Math.abs(a-sub.amount)>1)return 'ยอดรวมรายการไม่ตรงกับใบเสร็จ';
+  return null;
 }
 
 /* ───────── ไหลงาน ───────── */
-let cur=null,items=[];
+let cur=null,items=[],subtotal=null;
 function setStep(id,st){const e=$(id);e.className='step '+(st||'');
   if(st==='done')e.querySelector('.dot').innerHTML='<svg class="svgic" viewBox="0 0 24 24"><path d="M20.858,7.152c.192,.197,.188,.515-.011,.706l-9.792,9.5c-.412,.412-.966,.642-1.556,.642s-1.144-.229-1.561-.646L3.158,12.864c-.202-.188-.212-.505-.024-.707,.188-.202,.505-.213,.707-.024l4.75,4.5c.446,.446,1.176,.446,1.617,.009L20,7.142c.198-.192,.515-.188,.707,.011Z"/></svg>';}
 
@@ -317,7 +344,7 @@ async function fromFile(el){
       const r=await Tesseract.recognize(c,'eng',{logger:m=>{
         if(m.status==='recognizing text')$('pb').style.width=Math.round(m.progress*100)+'%';
       }});
-      items=parseItems(r.data.text);ocrOk=true;
+      const pr=parseReceipt(r.data.text);items=pr.items;subtotal=pr.sub;ocrOk=true;
     }catch(e){}
   }
   $('pb').style.width='100%';
@@ -325,10 +352,11 @@ async function fromFile(el){
 
   // ── 3 คำนวณ
   setStep('k3','run');
-  if(!items.length){
-    err(ocrOk?'อ่านรายการในใบเสร็จไม่ได้':'ตัวอ่านตัวอักษรใช้งานไม่ได้',
-        ocrOk?'ถ่ายใหม่ให้เห็นรายการสินค้าชัดเจน ไม่เอียง และมีแสงพอ'
-             :'หน้านี้โหลดตัวอ่านตัวอักษรไม่สำเร็จ ต้องเปิดจากเว็บไซต์จริงเท่านั้น');
+  if(!ocrOk){err('ตัวอ่านตัวอักษรใช้งานไม่ได้','หน้านี้โหลดตัวอ่านตัวอักษรไม่สำเร็จ ต้องเปิดจากเว็บไซต์จริงเท่านั้น');return}
+  const bad = items.length ? verify(items,subtotal) : 'อ่านรายการสินค้าไม่ได้';
+  if(bad){
+    err('อ่านใบเสร็จได้ไม่ครบ',
+        bad+'\nกรุณาถ่ายใหม่ให้ตรง ไม่เอียง เห็นครบตั้งแต่รายการแรกจนถึงบรรทัดยอดรวม และมีแสงพอ');
     return;
   }
   setStep('k3','done');
