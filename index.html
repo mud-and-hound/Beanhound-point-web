@@ -204,34 +204,67 @@ const parseEtax=u=>{
 /* ───────── อ่าน QR ───────── */
 let det=null;
 if('BarcodeDetector' in window){try{det=new BarcodeDetector({formats:['qr_code']})}catch(e){}}
-function canvasOf(img,W,sx,sy,sw,sh){
-  const sc=W/sw,w=Math.round(sw*sc),h=Math.round(sh*sc);
-  const c=document.createElement('canvas');c.width=w;c.height=h;
+// iOS Safari จำกัดหน่วยความจำ canvas — ย่อรูปครั้งเดียว แล้วใช้ canvas ตัวเดียวซ้ำทุกครั้ง
+const BASE_MAX=1800;
+let BASE=null;                       // canvas ต้นทางที่ย่อแล้ว
+const WORK=document.createElement('canvas');
+function makeBase(img){
+  const W=img.width,H=img.height;
+  const sc=Math.min(1,BASE_MAX/Math.max(W,H));
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(W*sc));c.height=Math.max(1,Math.round(H*sc));
   const x=c.getContext('2d',{willReadFrequently:true});
-  x.imageSmoothingQuality='high';x.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.drawImage(img,0,0,c.width,c.height);
   return c;
 }
-async function readQR(img){
-  const W=img.width,H=img.height;
-  if(det){try{const r=await det.detect(canvasOf(img,W,0,0,W,H));if(r.length)return r[0].rawValue}catch(e){}}
+// วาดพื้นที่ (sx,sy,sw,sh) ของ BASE ลง WORK ที่ความกว้าง tw แล้วคืน ImageData
+function grab(tw,sx,sy,sw,sh,binar){
+  const sc=tw/sw;
+  const w=Math.max(1,Math.round(sw*sc)),h=Math.max(1,Math.round(sh*sc));
+  if(w<80||h<80||w*h>4200000)return null;
+  WORK.width=w;WORK.height=h;
+  const x=WORK.getContext('2d',{willReadFrequently:true});
+  x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  x.clearRect(0,0,w,h);
+  x.drawImage(BASE,sx,sy,sw,sh,0,0,w,h);
+  const g=x.getImageData(0,0,w,h);
+  if(binar){
+    const d=g.data;let sum=0;
+    for(let i=0;i<d.length;i+=4){const v=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)|0;d[i]=d[i+1]=d[i+2]=v;sum+=v}
+    const th=sum/(d.length/4);
+    for(let i=0;i<d.length;i+=4){const v=d[i]>th?255:0;d[i]=d[i+1]=d[i+2]=v}
+  }
+  return g;
+}
+async function readQR(){
+  const W=BASE.width,H=BASE.height;
+  if(det){
+    try{const r=await det.detect(BASE);if(r.length)return r[0].rawValue}catch(e){}
+  }
   if(typeof jsQR==='undefined')return null;
-  const plans=[[1600,0,0,W,H],[1000,0,0,W,H],[2400,0,0,W,H],[700,0,0,W,H]];
+  const plans=[];
+  // ทั้งภาพ หลายขนาด
+  [1500,1100,1800,800].forEach(w=>plans.push([w,0,0,W,H,false]));
+  plans.push([1500,0,0,W,H,true]);
+  // ครึ่งล่างของใบเสร็จ (QR อยู่ท้ายบิลเสมอ)
+  plans.push([1400,0,Math.round(H*0.45),W,Math.round(H*0.55),false]);
+  plans.push([1400,0,Math.round(H*0.45),W,Math.round(H*0.55),true]);
+  // ซูมทีละส่วน 3x3 ซ้อนกัน
   for(let r=0;r<3;r++)for(let c=0;c<3;c++){
-    const sw=Math.round(W*.5),sh=Math.round(H*.5);
-    plans.push([1200,Math.round(c*(W-sw)/2),Math.round(r*(H-sh)/2),sw,sh]);
+    const sw=Math.round(W*.55),sh=Math.round(H*.55);
+    plans.push([1100,Math.round(c*(W-sw)/2),Math.round(r*(H-sh)/2),sw,sh,false]);
   }
   for(const p of plans){
     try{
-      const cv=canvasOf(img,p[0],p[1],p[2],p[3],p[4]);
-      if(cv.width<80||cv.width>4000)continue;
-      const g=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,cv.width,cv.height);
-      const q=jsQR(g.data,cv.width,cv.height,{inversionAttempts:'attemptBoth'});
-      if(q)return q.data;
+      const g=grab(p[0],p[1],p[2],p[3],p[4],p[5]);
+      if(!g)continue;
+      const q=jsQR(g.data,g.width,g.height,{inversionAttempts:'attemptBoth'});
+      if(q&&q.data)return q.data;
     }catch(e){}
   }
   return null;
 }
-
 /* ───────── OCR + แยกรายการ ───────── */
 // ── แก้ตัวอักษรที่ OCR สับสนกับตัวเลข แล้วเติมจุดทศนิยมให้ถ้าหาย
 const NUMFIX={'O':'0','o':'0','Q':'0','D':'0','l':'1','I':'1','i':'1','|':'1',
@@ -322,7 +355,8 @@ async function fromFile(el){
 
   // ── 1 QR
   setStep('k1','run');
-  const qr=await readQR(img);
+  try{ BASE=makeBase(img) }catch(e){ err('ประมวลผลรูปไม่ได้','รูปอาจใหญ่เกินไป ลองถ่ายใหม่อีกครั้ง'); return }
+  const qr=await readQR();
   const d=parseEtax(qr);
   if(!d){err('อ่าน QR ไม่ได้','ถ่ายใหม่ให้เห็น QR ท้ายใบเสร็จชัดเจน และอยู่ในภาพทั้งหมด');return}
   setStep('k1','done');
@@ -333,8 +367,10 @@ async function fromFile(el){
   items=[];let ocrOk=false;
   if(typeof Tesseract!=='undefined'){
     try{
-      const c=canvasOf(img,1500,0,0,img.width,img.height);
+      const c=document.createElement('canvas');
+      c.width=BASE.width;c.height=BASE.height;
       const g=c.getContext('2d',{willReadFrequently:true});
+      g.drawImage(BASE,0,0);
       const dt=g.getImageData(0,0,c.width,c.height),p=dt.data;
       let sum=0;
       for(let i=0;i<p.length;i+=4){const v=(p[i]*.299+p[i+1]*.587+p[i+2]*.114)|0;p[i]=p[i+1]=p[i+2]=v;sum+=v}
