@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ระบบสะสมแต้มจากใบเสร็จ — เอกสารประกอบการประชุม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111113; --ink-2:#55555c; --ink-3:#8a8a92;
+  --line:#dededf; --line-2:#ebebec; --paper:#fff; --wash:#f7f7f8;
+  --alert:#b4231f; --alert-bg:#fdf0ef;
+  --ok:#0f6b45; --ok-bg:#eaf5ef;
+  --hold:#8a6100; --hold-bg:#fdf5e6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Prompt',sans-serif;background:var(--wash);color:var(--ink);
+  font-size:14.5px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;background:var(--paper);padding:52px 56px 64px}
+
+/* ---- หัวเอกสาร ---- */
+.masthead{border-bottom:2.5px solid var(--ink);padding-bottom:22px;margin-bottom:38px}
+.kicker{font-size:10.5px;letter-spacing:.22em;color:var(--ink-3);font-weight:500}
+h1{font-size:31px;font-weight:600;letter-spacing:-.025em;line-height:1.22;margin:11px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:26px;font-size:12px;color:var(--ink-2)}
+.meta b{font-weight:500;color:var(--ink-3);display:block;font-size:10px;letter-spacing:.09em;margin-bottom:2px}
+
+/* ---- โครงหัวข้อ ---- */
+section{margin:44px 0}
+h2{font-size:19px;font-weight:600;letter-spacing:-.015em;padding-bottom:9px;
+  border-bottom:1px solid var(--line);margin-bottom:20px;display:flex;align-items:baseline;gap:12px}
+h2 .num{font-size:12px;color:var(--ink-3);font-weight:500;font-variant-numeric:tabular-nums;flex-shrink:0}
+h3{font-size:15px;font-weight:600;margin:24px 0 10px}
+p{margin:12px 0;max-width:74ch}
+ul{margin:12px 0 12px 20px}li{margin:6px 0;max-width:72ch}
+
+/* ---- ตาราง ---- */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+th{text-align:left;font-weight:500;font-size:10.5px;letter-spacing:.09em;color:var(--ink-3);
+  padding:0 12px 9px 0;border-bottom:1.5px solid var(--ink);text-transform:uppercase}
+td{padding:11px 12px 11px 0;border-bottom:1px solid var(--line-2);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+.num-col{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{border-top:1.5px solid var(--ink);border-bottom:none;font-weight:600}
+td b{font-weight:600}
+
+/* ---- ตัวเลขเด่น ---- */
+.figures{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);margin:24px 0}
+.fig{background:var(--paper);padding:20px 18px}
+.fig .v{font-size:29px;font-weight:600;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.fig .v.bad{color:var(--alert)}
+.fig .l{font-size:11.5px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+
+/* ---- กล่องข้อความ ---- */
+.box{border-left:3px solid var(--ink);padding:14px 0 14px 18px;margin:20px 0;background:var(--wash)}
+.box.alert{border-color:var(--alert);background:var(--alert-bg)}
+.box.ok{border-color:var(--ok);background:var(--ok-bg)}
+.box.hold{border-color:var(--hold);background:var(--hold-bg)}
+.box p{margin:0;max-width:70ch}
+.box p+p{margin-top:9px}
+.box .lead{font-weight:600}
+
+/* ---- flow ---- */
+.flow{background:var(--ink);color:#f2f2f3;padding:22px 26px;border-radius:4px;margin:20px 0;
+  font-size:13px;line-height:2.1;font-variant-numeric:tabular-nums}
+.flow .step{display:flex;gap:14px;align-items:baseline}
+.flow .step i{font-style:normal;color:#8a8a92;font-size:11px;width:16px;flex-shrink:0}
+.flow .arrow{color:#55555c;padding-left:30px;font-size:11px;line-height:1.2}
+
+/* ---- เฟส ---- */
+.phase{border:1px solid var(--line);margin:14px 0;padding:20px 22px}
+.phase.now{border-color:var(--ink);border-width:1.5px}
+.phase .head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:10px}
+.phase .name{font-size:15.5px;font-weight:600}
+.phase .when{font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.badge{display:inline-block;font-size:10px;letter-spacing:.09em;padding:3px 9px;
+  border:1px solid var(--ink);margin-bottom:9px}
+.badge.now{background:var(--ink);color:var(--paper)}
+
+/* ---- รายการตัดสินใจ ---- */
+.decide{counter-reset:d;list-style:none;margin:16px 0 0}
+.decide li{counter-increment:d;position:relative;padding:14px 0 14px 42px;
+  border-bottom:1px solid var(--line-2);max-width:none}
+.decide li::before{content:counter(d);position:absolute;left:0;top:14px;width:26px;height:26px;
+  border:1.5px solid var(--ink);display:grid;place-items:center;font-size:12px;font-weight:600}
+.decide .q{font-weight:600;display:block;margin-bottom:3px}
+.decide .why{font-size:12.5px;color:var(--ink-2)}
+
+.foot{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--ink-3);line-height:1.8}
+
+@media print{
+  body{background:#fff;font-size:11pt}
+  .page{max-width:none;padding:0}
+  section{page-break-inside:avoid}
+  h2{page-break-after:avoid}
+  .phase,.box,.figures{page-break-inside:avoid}
+}
+@media(max-width:700px){
+  .page{padding:28px 20px 40px}
+  .figures{grid-template-columns:1fr}
+  h1{font-size:25px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="masthead">
+  <div class="kicker">เอกสารประกอบการประชุม</div>
+  <h1>ระบบสะสมแต้มจากใบเสร็จ<br>BEANHOUND by Greyhound Café</h1>
+  <div class="meta">
+    <div><b>จัดทำโดย</b>ฝ่าย IT</div>
+    <div><b>ขอบเขตข้อมูล</b>1 มิ.ย. – 8 ก.ย. 2569</div>
+    <div><b>สถานะ</b>เสนอเพื่อพิจารณา</div>
+  </div>
+</div>
+
+
+<!-- ══════════ 1 ══════════ -->
+<section>
+  <h2><span class="num">01</span> สิ่งที่ข้อมูลบอก</h2>
+
+  <p>ฝ่าย IT ดึงข้อมูลจริงจาก 2 แหล่งมาเทียบกัน คือรายงานโปรโมชั่นใน CM POS
+     กับประวัติการแจกแต้มใน LINE OA ช่วงเวลาเดียวกัน</p>
+
+  <table>
+    <thead><tr><th>รายการ</th><th class="num-col">จำนวน</th></tr></thead>
+    <tbody>
+      <tr><td>เครื่องดื่มฟรีที่จ่ายออกไป</td><td class="num-col">411 แก้ว</td></tr>
+      <tr><td>ส่วนลด 50% ที่ใช้ไป</td><td class="num-col">448 ครั้ง</td></tr>
+      <tr><td>มูลค่าส่วนลดรวม</td><td class="num-col">55,436 บาท</td></tr>
+      <tr class="total"><td>แต้มที่ต้องใช้รองรับการแลกทั้งหมดนี้</td><td class="num-col">6,350 แต้ม</td></tr>
+      <tr><td>แต้มที่ระบบ LINE แจกไปจริงตลอดอายุบัตร</td><td class="num-col"><b>715 แต้ม</b></td></tr>
+      <tr><td>จำนวนลูกค้าที่เคยมีบัตรสะสมแต้มทั้งหมด</td><td class="num-col"><b>94 ราย</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="figures">
+    <div class="fig"><div class="v">859</div><div class="l">ครั้งที่มีการแลกสิทธิ์<br>ในระบบ POS</div></div>
+    <div class="fig"><div class="v">71</div><div class="l">จำนวนสูงสุดที่แต้มทั้งระบบ<br>รองรับได้ตามทฤษฎี</div></div>
+    <div class="fig"><div class="v bad">788</div><div class="l">ส่วนต่างที่ไม่มีบันทึก<br>การตัดแต้มรองรับ</div></div>
+  </div>
+
+  <div class="box alert">
+    <p class="lead">ข้อสรุปที่ปฏิเสธไม่ได้</p>
+    <p>บัตรสะสมแต้มใน LINE เริ่มมีการใช้งานครั้งแรกเมื่อ 29 มิถุนายน 2569 ก่อนหน้านั้นยอดแต้ม
+       คงเหลือของทุกคนเป็นศูนย์ จึงคำนวณแบบระบบปิดได้ว่า แม้นำแต้มทุกแต้มที่เคยแจกมาแลก
+       เครื่องดื่มฟรีทั้งหมด จะแลกได้สูงสุด 71 แก้ว แต่ระบบ POS จ่ายออกไปจริง 411 แก้ว</p>
+    <p>เอกสารนี้ไม่ได้สรุปว่ามีผู้ใดทุจริต แต่ระบุข้อเท็จจริงว่า
+       <b>การแลกสิทธิ์ 859 ครั้ง มูลค่า 55,436 บาท ไม่มีหลักฐานที่ตรวจสอบย้อนหลังได้แม้แต่ครั้งเดียว</b>
+       ว่าใครเป็นผู้แลก บัตรจริงหรือไม่ และแสตมป์ครบตามเงื่อนไขหรือเปล่า</p>
+  </div>
+
+  <h3>ประเด็นเพิ่มเติมที่พบ</h3>
+  <table>
+    <thead><tr><th>ประเด็น</th><th>ข้อเท็จจริง</th></tr></thead>
+    <tbody>
+      <tr><td>เงื่อนไขไม่ตรงกัน</td>
+          <td>บัตรกระดาษระบุมูลค่าไม่เกิน 100 บาท แต่ระบบ LINE ระบุ 70 บาท</td></tr>
+      <tr><td>เพดานมูลค่าไม่ถูกบังคับใช้</td>
+          <td>396 จาก 411 แก้ว (96%) มีราคาเกิน 70 บาท ราคาเฉลี่ยที่จ่ายจริง 86.30 บาท</td></tr>
+      <tr><td>ไม่มีผู้รับผิดชอบเงื่อนไข</td>
+          <td>ยังไม่มีผู้ให้คำตอบได้ว่าเงื่อนไขใดคือเงื่อนไขที่ได้รับอนุมัติ</td></tr>
+      <tr><td>ระบบ LINE ตรวจย้อนหลังไม่ได้</td>
+          <td>ประวัติมีเพียง วันที่ / เวลา / ชื่อผู้ใช้ / จำนวนแต้ม ไม่มีสาขา ไม่มีผู้ทำรายการ ไม่มีเลขที่บิล</td></tr>
+      <tr><td>ตั้งค่าการรับแต้มเป็น "ไม่จำกัด"</td>
+          <td>ลูกค้า 1 รายรับแต้มได้ไม่จำกัดจำนวนครั้งและไม่จำกัดเวลา</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ══════════ 2 ══════════ -->
+<section>
+  <h2><span class="num">02</span> ทำไมการเปลี่ยนจากกระดาษมาเป็น LINE จึงไม่ได้แก้ปัญหา</h2>
+
+  <p>ทั้งสองรูปแบบมีจุดอ่อนเดียวกัน คือ <b>ไม่ผูกการให้แต้มเข้ากับการซื้อจริง</b>
+     จึงเป็นการเปลี่ยนรูปแบบของช่องโหว่ ไม่ใช่การปิดช่องโหว่</p>
+
+  <table>
+    <thead><tr><th>ประเด็น</th><th>บัตรกระดาษ</th><th>บัตร LINE (ปัจจุบัน)</th><th>ระบบที่เสนอ</th></tr></thead>
+    <tbody>
+      <tr><td>ผูกกับใบเสร็จจริง</td><td>ไม่</td><td>ไม่</td><td><b>ผูก</b></td></tr>
+      <tr><td>รู้ว่าให้แต้มที่สาขาไหน</td><td>ไม่</td><td>ไม่</td><td><b>รู้</b></td></tr>
+      <tr><td>ใช้ใบเสร็จเดิมซ้ำได้</td><td>ได้</td><td>ได้</td><td><b>ไม่ได้</b></td></tr>
+      <tr><td>ตรวจสอบย้อนหลังได้</td><td>ไม่</td><td>บางส่วน</td><td><b>ได้ทุกรายการ</b></td></tr>
+      <tr><td>ผู้ให้แต้มคือใคร</td><td>พนักงาน</td><td>พนักงาน</td><td><b>ระบบคำนวณเอง</b></td></tr>
+      <tr><td>มีหลักฐานเก็บไว้</td><td>ไม่มี</td><td>ไม่มี</td><td><b>รูปใบเสร็จ</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <p>แถวสุดท้ายคือหัวใจ ตราบใดที่มนุษย์เป็นผู้ตัดสินใจว่าจะให้แต้มหรือไม่ให้
+       การควบคุมด้วยเครื่องมือใดก็ตามจะไม่ได้ผล เพราะผู้ทำรายการอยู่ในสาขาจริง
+       ในเวลาทำงานจริง เพียงแต่ทำรายการให้ผู้ที่ไม่ได้ซื้อสินค้า</p>
+  </div>
+</section>
+
+
+<!-- ══════════ 3 ══════════ -->
+<section>
+  <h2><span class="num">03</span> ระบบที่เสนอทำงานอย่างไร</h2>
+
+  <p>ใบเสร็จของบริษัททุกใบมี QR Code สำหรับขอใบกำกับภาษีอิเล็กทรอนิกส์พิมพ์อยู่แล้ว
+     ระบบนำ QR นี้มาใช้เป็นหลักฐานยืนยันการซื้อ โดยไม่ต้องแก้ไขระบบ POS และไม่เพิ่มขั้นตอนให้พนักงาน</p>
+
+  <div class="flow">
+    <div class="step"><i>1</i><span>ลูกค้าชำระเงิน ได้รับใบเสร็จตามปกติ</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><i>2</i><span>เปิดเว็บ ถ่ายรูปใบเสร็จ 1 รูป</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><i>3</i><span>ระบบอ่าน QR ได้ เลขที่บิล / สาขา / วันที่ / ยอดเงิน</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><i>4</i><span>ระบบตรวจสอบและคำนวณแต้มจากจำนวนเครื่องดื่มในบิล</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><i>5</i><span>ลูกค้ากดปุ่มเดียว เข้า LINE รับแต้ม</span></div>
+  </div>
+
+  <p>ไม่มีขั้นตอนใดที่ผู้ใช้กรอกหรือแก้ไขตัวเลขได้ การคำนวณแต้มเกิดขึ้นที่เซิร์ฟเวอร์เท่านั้น</p>
+
+  <h3>สิ่งที่ระบบบันทึกไว้ทุกครั้ง</h3>
+  <table>
+    <thead><tr><th>ข้อมูล</th><th>ใช้ทำอะไร</th></tr></thead>
+    <tbody>
+      <tr><td>เลขที่บิล + สาขา + วันที่</td><td>กันการนำใบเสร็จเดิมกลับมาใช้ซ้ำ</td></tr>
+      <tr><td>ยอดเงิน</td><td>ตรวจสอบว่าตรงกับที่อ่านได้จากภาพ</td></tr>
+      <tr><td>แต้มที่คำนวณและให้จริง</td><td>กระทบยอดกับรายงาน POS ได้</td></tr>
+      <tr><td>รูปใบเสร็จย่อ</td><td>หลักฐานประกอบการตรวจสอบย้อนหลัง</td></tr>
+      <tr><td>รายการที่ถูกปฏิเสธ พร้อมเหตุผล</td><td>ตรวจจับพฤติกรรมผิดปกติ</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ══════════ 4 ══════════ -->
+<section>
+  <h2><span class="num">04</span> ประโยชน์ที่ได้รับ</h2>
+
+  <table>
+    <thead><tr><th>ด้าน</th><th>สิ่งที่ได้</th></tr></thead>
+    <tbody>
+      <tr><td>การเงิน</td><td>ปิดช่องการรับแต้มโดยไม่มีการซื้อจริง ซึ่งเป็นต้นทางของภาระแต้มค้างรับ</td></tr>
+      <tr><td>การตรวจสอบ</td><td>ทุกแต้มอ้างอิงกลับไปยังใบเสร็จได้ พร้อมรูปหลักฐาน</td></tr>
+      <tr><td>การบริหารสาขา</td><td>เห็นข้อมูลรายสาขาแบบรายวัน เทียบกันได้ ทำให้พบความผิดปกติได้เร็ว</td></tr>
+      <tr><td>การตลาด</td><td>ได้ข้อมูลจริงว่าลูกค้ามาถี่แค่ไหน ซื้ออะไร ใช้ปรับเงื่อนไขบัตรได้จากข้อมูล</td></tr>
+      <tr><td>หน้าร้าน</td><td>พนักงานไม่ต้องทำอะไรเพิ่ม ไม่ต้องถือ QR ไม่ต้องกดให้ลูกค้า</td></tr>
+      <tr><td>ความเป็นธรรม</td><td>พนักงานไม่ถูกตั้งข้อสงสัย เพราะไม่ได้อยู่ในกระบวนการให้แต้มอีกต่อไป</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box ok">
+    <p class="lead">ประเด็นที่มักถูกมองข้าม</p>
+    <p>การนำพนักงานออกจากกระบวนการให้แต้ม เป็นการคุ้มครองพนักงานด้วย
+       ปัจจุบันหากเกิดความเสียหาย พนักงานหน้าร้านคือกลุ่มแรกที่ถูกตั้งคำถาม
+       ทั้งที่ระบบไม่มีหลักฐานพอจะพิสูจน์ได้ว่าใครทำอะไร</p>
+  </div>
+</section>
+
+
+<!-- ══════════ 5 ══════════ -->
+<section>
+  <h2><span class="num">05</span> ข้อจำกัดและสิ่งที่ระบบนี้ยังไม่แก้</h2>
+
+  <p>ส่วนนี้จัดทำขึ้นเพื่อให้ที่ประชุมตัดสินใจบนข้อมูลที่ครบถ้วน ไม่ใช่เฉพาะด้านที่เป็นประโยชน์</p>
+
+  <table>
+    <thead><tr><th>ข้อจำกัด</th><th>ผลกระทบ</th><th>แนวทาง</th></tr></thead>
+    <tbody>
+      <tr><td>ยังไม่ทราบว่าใครเป็นผู้สแกน</td>
+          <td>ทราบเพียงว่าใบเสร็จใดถูกใช้ แต่ยังระบุตัวบุคคลไม่ได้</td>
+          <td>แก้ในระยะที่ 2</td></tr>
+      <tr><td><b>ยังไม่ครอบคลุมฝั่งการใช้สิทธิ์</b></td>
+          <td>ระบบนี้ควบคุมเฉพาะการรับแต้ม ส่วนการแลกของฟรีซึ่งเป็นต้นทุนที่เกิดขึ้นทันที ยังไม่ถูกควบคุม</td>
+          <td>แก้ในระยะที่ 3</td></tr>
+      <tr><td>ต้องใช้อินเทอร์เน็ต</td>
+          <td>หากสัญญาณขัดข้อง ลูกค้ารับแต้มไม่ได้ในขณะนั้น</td>
+          <td>ใบเสร็จยังใช้ได้ภายในกรอบเวลาที่กำหนด</td></tr>
+      <tr><td>คุณภาพของภาพถ่ายมีผล</td>
+          <td>ถ่ายเอียงหรือแสงไม่พอ ระบบจะปฏิเสธและให้ถ่ายใหม่</td>
+          <td>ออกแบบให้ปฏิเสธ ดีกว่าให้แต้มผิด</td></tr>
+      <tr><td>ยังพึ่งการอ่านภาพ</td>
+          <td>ข้อมูลรายการสินค้าใน CM POS ใช้ได้หลัง Day End จึงยังนำมาใช้ขณะลูกค้าอยู่หน้าร้านไม่ได้</td>
+          <td>ตรวจกระทบยอดย้อนหลังทุกคืน</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box hold">
+    <p class="lead">ข้อที่ต้องเน้นต่อที่ประชุม</p>
+    <p>จากข้อมูลในหัวข้อ 01 ความเสียหายเกิดขึ้นที่ <b>ฝั่งการแลกของฟรี</b> เป็นหลัก
+       เพราะเป็นต้นทุนที่จ่ายออกเป็นเงินสดทันที ขณะที่แต้มที่แจกเกินเป็นภาระในอนาคต</p>
+    <p>ระบบในระยะที่ 1 ยังไม่ปิดช่องนี้ การอนุมัติระยะที่ 1 จึงควรพิจารณาควบคู่กับแผนระยะที่ 3
+       มิฉะนั้นจะได้ระบบที่ควบคุมด้านที่เสียหายน้อยกว่า</p>
+  </div>
+</section>
+
+
+<!-- ══════════ 6 ══════════ -->
+<section>
+  <h2><span class="num">06</span> แผนการดำเนินงาน</h2>
+
+  <div class="phase now">
+    <span class="badge now">พร้อมใช้งานแล้ว</span>
+    <div class="head"><div class="name">ระยะที่ 1 — ควบคุมการรับแต้ม</div><div class="when">1 สัปดาห์</div></div>
+    <p style="margin:0">เว็บสแกนใบเสร็จ ผูกแต้มกับเลขที่บิล กันการใช้ซ้ำ เก็บหลักฐานครบทุกรายการ
+       พัฒนาเสร็จแล้ว ทดสอบการอ่าน QR กับใบเสร็จจริงผ่าน 11 จาก 11 ใบ
+       รอเพียงการอนุมัติเงื่อนไขทางธุรกิจ</p>
+  </div>
+
+  <div class="phase">
+    <span class="badge">ขั้นถัดไป</span>
+    <div class="head"><div class="name">ระยะที่ 2 — ระบุตัวตนลูกค้า</div><div class="when">2–3 สัปดาห์</div></div>
+    <p style="margin:0">ย้ายเข้า LINE MINI App เพื่อให้ทราบว่าผู้รับแต้มคือใคร
+       และย้ายแต้มมาเก็บในฐานข้อมูลของบริษัท แทนการพึ่งลิงก์รับแต้มที่ส่งต่อกันได้</p>
+  </div>
+
+  <div class="phase">
+    <span class="badge">ขั้นที่แก้ต้นเหตุ</span>
+    <div class="head"><div class="name">ระยะที่ 3 — ควบคุมการใช้สิทธิ์</div><div class="when">2 สัปดาห์</div></div>
+    <p style="margin:0">ตัดแต้มก่อนส่งมอบสินค้า และออกเลขอ้างอิงที่ต้องบันทึกใน POS
+       ทำให้จำนวนของฟรีที่จ่ายออก กับจำนวนแต้มที่ถูกตัด ตรงกันแบบหนึ่งต่อหนึ่ง
+       และกระทบยอดได้ทุกวัน</p>
+  </div>
+
+  <table style="margin-top:26px">
+    <thead><tr><th>รายการต้นทุน</th><th class="num-col">ประมาณการ</th></tr></thead>
+    <tbody>
+      <tr><td>ค่าพัฒนา</td><td class="num-col">ไม่มี (ดำเนินการโดยฝ่าย IT)</td></tr>
+      <tr><td>เซิร์ฟเวอร์และฐานข้อมูล</td><td class="num-col">ไม่มี (ใช้เครื่องเดิม)</td></tr>
+      <tr><td>ค่าประมวลผลอ่านใบเสร็จ</td><td class="num-col">30–150 บาท/เดือน</td></tr>
+      <tr class="total"><td>รวมต้นทุนต่อปี</td><td class="num-col">ไม่เกิน 1,800 บาท</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ══════════ 7 ══════════ -->
+<section>
+  <h2><span class="num">07</span> เรื่องที่ขอมติจากที่ประชุม</h2>
+
+  <p>ระบบพร้อมใช้งานแล้ว แต่ยังเริ่มไม่ได้จนกว่าจะมีคำตอบในประเด็นเหล่านี้
+     เนื่องจากเป็นการตัดสินใจทางธุรกิจ ไม่ใช่การตัดสินใจทางเทคนิค</p>
+
+  <ol class="decide">
+    <li><span class="q">ใครเป็นเจ้าของโปรโมชั่นบัตรสะสมแต้ม</span>
+        <span class="why">ต้องมีผู้รับผิดชอบที่ระบุชื่อได้ สำหรับอนุมัติเงื่อนไข รับรายงาน และสั่งการเมื่อพบความผิดปกติ
+        หากไม่มีผู้รับผิดชอบ ระบบที่สร้างขึ้นจะไม่ถูกนำไปใช้</span></li>
+
+    <li><span class="q">เงื่อนไขที่ถูกต้องคือมูลค่าไม่เกิน 70 หรือ 100 บาท</span>
+        <span class="why">ปัจจุบันบัตรกระดาษกับ LINE ระบุไม่ตรงกัน และการตั้งค่าใน LINE แก้ไขไม่ได้หลังเริ่มใช้บัตร
+        หากต้องแก้ ต้องออกบัตรใบใหม่</span></li>
+
+    <li><span class="q">บัตรกระดาษจะยกเลิกเมื่อใด</span>
+        <span class="why">หากยังใช้คู่ขนานกันต่อไป ช่องโหว่เดิมจะยังคงอยู่ และระบบใหม่จะไม่สามารถกระทบยอดได้</span></li>
+
+    <li><span class="q">แต้มคิดตามจำนวนแก้ว หรือตามยอดเงิน</span>
+        <span class="why">ปัจจุบันคิดตามแก้ว ทำให้เครื่องดื่ม 55 บาทกับ 150 บาทได้แต้มเท่ากัน
+        และบิลที่ใช้ส่วนลดจะได้แต้มน้อยลงหากเปลี่ยนไปคิดตามยอดเงิน</span></li>
+
+    <li><span class="q">อายุบัตรควรเป็นเท่าใด</span>
+        <span class="why">ปัจจุบันตั้งเป็น 1 ปีนับจากใช้ครั้งสุดท้าย ซึ่งทำให้ลูกค้าประจำมีแต้มที่ไม่หมดอายุ
+        และภาระแต้มค้างรับไม่มีเพดาน ควรพิจารณาจากข้อมูลความถี่การกลับมาซื้อจริง</span></li>
+
+    <li><span class="q">อนุมัติให้ดำเนินการระยะที่ 3 ต่อเนื่องหรือไม่</span>
+        <span class="why">เป็นระยะที่แก้ปัญหาต้นทุนที่จ่ายออกจริง หากอนุมัติเฉพาะระยะที่ 1
+        จะควบคุมได้เฉพาะด้านที่มีความเสียหายน้อยกว่า</span></li>
+  </ol>
+</section>
+
+
+<!-- ══════════ 8 ══════════ -->
+<section>
+  <h2><span class="num">08</span> ประเด็นทางเทคนิคที่ต้องตรวจสอบเพิ่ม</h2>
+
+  <p>จากการตรวจสอบระบบ CM POS พบว่ามีฟังก์ชัน Coupon ที่รองรับรูปแบบ
+     Coupon Redeem, Member Redeem และ E-Code Online พร้อมสวิตช์ Interface API อยู่แล้ว</p>
+
+  <p>หากฟังก์ชันเหล่านี้ใช้งานได้จริง จะสามารถออกรหัสใช้สิทธิ์จากระบบของเรา
+     แล้วให้พนักงานคีย์เข้า POS ได้โดยตรง โดยไม่ต้องพัฒนาวิธีอื่นเพิ่ม
+     ซึ่งจะทำให้ระยะที่ 3 ทำได้เร็วขึ้นมาก</p>
+
+  <div class="box">
+    <p>เสนอให้ที่ประชุมมอบหมายผู้ประสานงานกับผู้ให้บริการ CM POS เพื่อสอบถาม 3 ข้อ</p>
+    <p>1. ฟังก์ชัน Coupon Redeem และ E-Code Online เปิดใช้งานได้หรือไม่<br>
+       2. สวิตช์ Interface API เชื่อมต่อกับระบบภายนอกได้ในรูปแบบใด<br>
+       3. รายการโปรโมชั่นรองรับการบันทึกเลขอ้างอิงหรือไม่</p>
+  </div>
+</section>
+
+
+<div class="foot">
+  ข้อมูลในเอกสารนี้มาจากรายงาน Promotion (All Shop) ของ CM POS และไฟล์ประวัติการใช้งาน
+  บัตรสะสมแต้มที่ส่งออกจาก LINE Official Account Manager ช่วง 1 มิถุนายน – 8 กันยายน 2569
+  เฉพาะแบรนด์ BEANHOUND<br>
+  ตัวเลขประมาณการความเสียหายคำนวณจากส่วนต่างระหว่างการแลกสิทธิ์กับแต้มที่มีอยู่จริง
+  และควรทบทวนอีกครั้งหลังทราบสัดส่วนการใช้บัตรกระดาษ<br>
+  เอกสารนี้ระบุข้อเท็จจริงเชิงระบบ ไม่ได้กล่าวหาบุคคลใด
+</div>
+
+</div>
+</body>
+</html>
