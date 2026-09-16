@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BEANHOUND Reports</title>
+<style>
+:root{color-scheme:light;--bg:#f4f4f5;--paper:#fff;--ink:#161616;--muted:#626269;--line:#dcdce0;--soft:#f7f7f8;--accent:#146541;--danger:#a52a25;--radius:10px;--space:24px;--font:Prompt,system-ui,sans-serif;--scroll:#8d8d96}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--scroll) var(--soft)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--scroll);border:2px solid var(--soft);border-radius:8px}::-webkit-scrollbar-track{background:var(--soft)}
+html{scrollbar-gutter:stable}body{margin:0;color:var(--ink);background:var(--bg);font:14px/1.65 var(--font)}
+[hidden]{display:none!important}button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}
+button{min-height:44px;padding:10px 18px;border:1px solid var(--ink);border-radius:var(--radius);background:var(--ink);color:var(--paper);cursor:pointer;font-weight:500}
+button.secondary{background:var(--paper);color:var(--ink);border-color:var(--line)}button:disabled{opacity:.5;cursor:wait}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}input,select{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;background:var(--paper);color:var(--ink)}
+label{display:block;margin-bottom:6px;font-weight:500}header{background:var(--paper);border-bottom:1px solid var(--line);padding:20px 32px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.brand{font:700 17px Arial,sans-serif;letter-spacing:.16em}.byline{font-size:11px;color:var(--muted);letter-spacing:.07em;margin-top:4px}
+main{max-width:1440px;margin:auto;padding:32px}h1{font-size:28px;letter-spacing:-.03em;margin:0 0 8px;line-height:1.4}h2{font-size:18px;margin:0}p{margin:0;color:var(--muted)}
+#login-panel{max-width:440px;margin:8vh auto;padding:32px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+#login-panel form{margin-top:28px;display:grid;gap:18px}.password-row{display:flex;gap:8px}.password-row input{min-width:0}.password-row button{flex-shrink:0}
+#status{min-height:28px;margin:16px 0;color:var(--muted)}#status[data-error=true]{color:var(--danger)}
+.topline{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.filters{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.search-row{display:flex;gap:8px}.search-row input{min-width:0}.filter-actions{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.filter-note{grid-column:1/-1;font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);margin:24px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
+.metric{padding:20px 24px}.metric+.metric{border-left:1px solid var(--line)}.metric span{color:var(--muted);font-size:12px}.metric strong{display:block;font-size:32px;line-height:1.4;font-weight:500;font-variant-numeric:tabular-nums}
+.report{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.report-head{padding:20px;display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid var(--line)}
+.table-scroll{overflow:auto;max-height:65vh;min-height:240px}table{border-collapse:collapse;width:100%;font-size:13px;text-align:left}caption{text-align:left;padding:12px 20px;color:var(--muted);font-size:12px}th,td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}th{background:var(--soft);font-weight:500}td.number{text-align:right;font-variant-numeric:tabular-nums}tbody tr:hover{background:var(--soft)}
+details{max-width:380px}summary{cursor:pointer;color:var(--accent);padding:0 4px}dl{white-space:normal;min-width:220px;overflow-wrap:anywhere;margin:12px 0}dt{color:var(--muted);font-size:11px;margin-top:8px}dd{margin:0;font-size:12px}#empty{padding:64px 24px;text-align:center}
+.pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px}.pagination div{display:flex;gap:8px}footer{padding:24px 0;color:var(--muted);font-size:12px}
+@media(max-width:850px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.topline{align-items:start}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(4){border-top:1px solid var(--line)}}
+@media(max-width:500px){main{padding:20px 14px}header{padding:16px}.brand{font-size:14px}.topline{display:block}h1{font-size:24px}.filters{grid-template-columns:1fr}.metric{padding:16px}.metric strong{font-size:26px}.report-head{align-items:start;flex-direction:column}#login-panel{margin:24px auto;padding:24px}.pagination{flex-wrap:wrap}.filter-actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div><div class="brand" data-copy="brand"></div><div class="byline" data-copy="byline"></div></div><button id="logout" class="secondary" data-copy="logout" hidden></button></header>
+<main>
+<section id="login-panel" aria-labelledby="login-title">
+  <p class="eyebrow" data-copy="workspace"></p><h1 id="login-title" data-copy="loginTitle"></h1><p data-copy="loginHint"></p>
+  <form id="login-form" novalidate>
+    <div><label for="username" data-copy="username"></label><input id="username" autocomplete="username" required aria-describedby="status"></div>
+    <div><label for="password" data-copy="password"></label><div class="password-row"><input id="password" type="password" autocomplete="current-password" required aria-describedby="status"><button type="button" id="toggle-password" class="secondary" data-copy="showPassword" aria-pressed="false"></button></div></div>
+    <button id="login-button" type="submit" data-copy="login"></button>
+  </form>
+</section>
+<p id="status" role="status" aria-live="polite"></p>
+<section id="dashboard" hidden aria-labelledby="report-title">
+ <div class="topline"><div><p class="eyebrow" data-copy="workspace"></p><h1 id="report-title" data-copy="reportTitle"></h1><p data-copy="intro"></p></div><p id="timezone"></p></div>
+ <form id="filter-form" class="filters" novalidate>
+  <div><label for="kind" data-copy="dataset"></label><select id="kind"></select></div>
+  <div><label for="start" data-copy="start"></label><input type="datetime-local" id="start" aria-describedby="status"></div>
+  <div><label for="end" data-copy="end"></label><input type="datetime-local" id="end" aria-describedby="status"></div>
+  <div><label for="shop" data-copy="shop"></label><select id="shop"></select></div>
+  <div><label for="bill" data-copy="bill"></label><div class="search-row"><input id="bill" type="search" autocomplete="off"><button type="button" id="clear-search" class="secondary" data-copy="clear" hidden></button></div></div>
+  <div><label for="result" data-copy="result"></label><select id="result"></select></div>
+  <div class="filter-actions"><button type="submit" data-copy="apply"></button><button type="button" id="today" class="secondary" data-copy="today"></button></div>
+  <p class="filter-note" id="filter-note"></p>
+ </form>
+ <p class="filter-note" data-copy="summaryNote"></p>
+ <div class="metrics" id="metrics">
+  <div class="metric"><span data-copy="claims"></span><strong id="metric-claims">—</strong></div>
+  <div class="metric"><span data-copy="points"></span><strong id="metric-points">—</strong></div>
+  <div class="metric"><span data-copy="scans"></span><strong id="metric-scans">—</strong></div>
+  <div class="metric"><span data-copy="duplicates"></span><strong id="metric-duplicates">—</strong></div>
+ </div>
+ <section class="report" aria-labelledby="table-title">
+  <div class="report-head"><div><h2 id="table-title"></h2><p id="count"></p></div><button id="export" class="secondary" data-copy="export"></button></div>
+  <div class="table-scroll"><table><caption id="caption"></caption><thead id="thead"></thead><tbody id="tbody"></tbody></table><p id="empty" data-copy="empty" hidden></p></div>
+  <div class="pagination"><p id="page-info"></p><div><button id="prev" class="secondary" data-copy="prev"></button><button id="next" class="secondary" data-copy="next"></button></div></div>
+ </section>
+ <footer data-copy="footer"></footer>
+</section>
+</main>
+<script id="app-config">
+const CONFIG = {
+ API_URL:'https://beanhoundscan.mobile1234.site', prefix:'/api/admin', fontUrl:'https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=optional',
+ locale:'th-TH', timezone:'Asia/Bangkok', offset:'+07:00', timeoutMs:30000, searchDelayMs:300, dateStep:1,
+ unauthorizedStatus:401, filenamePrefix:'beanhound-', numberOptions:{maximumFractionDigits:2},
+ dateOptions:{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Bangkok'},
+ datasets:{claims:'รายการรับแต้ม',attempts:'ประวัติการสแกน',duplicates:'จำนวนสแกนซ้ำรายใบ',shops:'ข้อมูลสาขา',rules:'กติกาแต้ม',tiers:'ขั้นอัตราแต้ม',links:'ลิงก์ LINE'},
+ dated:['claims','attempts','duplicates'],
+ columns:{id:'ลำดับ',brand:'แบรนด์',shop_code:'รหัสสาขา',shop_name:'ชื่อสาขา',bill_no:'เลขใบเสร็จ',bill_date:'วันที่ใบเสร็จ',bill_time:'เวลาใบเสร็จ',amount_net:'ยอดสุทธิ',amount_gross:'ยอดก่อนส่วนลด',amount_used:'ยอดคำนวณแต้ม',points:'แต้ม',rule_id:'รหัสกติกา',tier_amount:'ยอดขั้นแต้ม',capped:'จำกัดตามเพดาน',items_json:'รายการสินค้า',image_path:'ไฟล์หลักฐาน',image_sha256:'รหัสตรวจสอบรูป',line_user_id:'บัญชี LINE',client_ip:'IP ผู้สแกน',user_agent:'อุปกรณ์',created_at:'เวลาบันทึก',amount:'ยอดเงิน',result:'สถานะ',detail:'รายละเอียด',duplicate_scan_count:'จำนวนซ้ำ',first_duplicate_at:'สแกนซ้ำครั้งแรก',last_duplicate_at:'สแกนซ้ำล่าสุด',name:'ชื่อสาขา',tier:'ระดับสาขา',reward_max:'มูลค่าสิทธิ์',is_active:'เปิดใช้งาน',updated_at:'แก้ไขล่าสุด',rule_name:'ชื่อกติกา',calc_mode:'วิธีคำนวณ',amount_basis:'ฐานยอดเงิน',max_points_per_bill:'เพดานแต้มต่อบิล',claim_window_min:'เวลารับแต้ม (นาที)',effective_from:'เริ่มใช้',effective_to:'สิ้นสุด',approved_by:'ผู้อนุมัติ',note:'หมายเหตุ',min_amount:'ยอดขั้นต่ำ',url:'ลิงก์'},
+ visible:{claims:['id','shop_name','bill_no','bill_date','amount_used','points','created_at'],attempts:['id','shop_code','bill_no','bill_date','result','created_at']},
+ numeric:['id','points','amount','amount_net','amount_gross','amount_used','duplicate_scan_count','min_amount','reward_max','max_points_per_bill','claim_window_min'],
+ timestamps:['created_at','updated_at','first_duplicate_at','last_duplicate_at','effective_from','effective_to'],
+ statuses:{ok:'รับแต้มสำเร็จ',duplicate:'ใบเสร็จซ้ำ',bill_mismatch:'เลขบิลไม่ตรง',reprint:'ใบพิมพ์ซ้ำ',expired:'เกินเวลา',shop_closed:'สาขาปิดใช้งาน',unreadable:'อ่านไม่ได้',below_min:'ยอดไม่ถึง',no_link:'ไม่มีลิงก์รับแต้ม',rate_limited:'เกินจำนวนครั้ง',error:'ข้อผิดพลาด'},
+ messages:{brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'LOYALTY / ADMIN',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'เลือกช่วงเวลา ดูรายการ และดาวน์โหลดข้อมูล',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',apply:'แสดงรายงาน',today:'วันนี้',claims:'รับแต้มสำเร็จ',points:'แต้มรวม',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',export:'ดาวน์โหลด CSV',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'รายงานใช้เวลาบันทึกในระบบ • CSV รวมทุกคอลัมน์ของรายงานที่เลือก',all:'ทั้งหมด',detail:'รายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์ CSV…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'เลือกวันเวลาเริ่มต้นและสิ้นสุดให้ถูกต้อง',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'กรองตามเวลาที่บันทึก ตั้งแต่เวลาเริ่มต้นถึงเวลาสิ้นสุด รวมเวลาที่ระบุ',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'เลื่อนตารางเพื่อดูคอลัมน์เพิ่มเติม · เปิดรายละเอียดเพื่อดูข้อมูลทั้งหมด',dash:'—'}
+};
+</script>
+<script id="app-main">
+'use strict';
+const $=id=>document.getElementById(id);
+const state={token:null,page:1,pages:1,busy:false,meta:null,controller:null,generation:0};
+const number=new Intl.NumberFormat(CONFIG.locale,CONFIG.numberOptions);
+const dates=new Intl.DateTimeFormat(CONFIG.locale,CONFIG.dateOptions);
+const copy=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',v),CONFIG.messages[key]);
+function status(message='',error=false){$('status').textContent=message;$('status').dataset.error=String(error);}
+function busy(value){state.busy=value;document.querySelectorAll('button,input,select').forEach(el=>el.disabled=value);$('prev').disabled=value||state.page<=1;$('next').disabled=value||state.page>=state.pages;$('dashboard').setAttribute('aria-busy',String(value));}
+function lock(message){state.generation++;state.token=null;state.meta=null;for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');$('count').textContent='';$('page-info').textContent='';$('password').type='password';$('toggle-password').textContent=copy('showPassword');$('toggle-password').setAttribute('aria-pressed','false');$('password').value='';$('tbody').replaceChildren();$('thead').replaceChildren();$('dashboard').hidden=true;$('login-panel').hidden=false;$('logout').hidden=true;status(message,true);$('username').focus();}
+async function api(path,options={}){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
+ const requestToken=state.token;const headers={...(requestToken?{Authorization:'Bearer '+requestToken}:{}),...options.headers};
+ try{
+  const response=await fetch(CONFIG.API_URL+CONFIG.prefix+path,{...options,headers,signal:controller.signal,cache:'no-store',credentials:'omit'});
+  if(!response.ok){let body;try{body=await response.json();}catch{}if(response.status===CONFIG.unauthorizedStatus&&requestToken&&state.token===requestToken)lock(copy('session'));throw new Error(typeof body?.detail==='string'?body.detail:copy('error'));}
+  return response;
+ }finally{clearTimeout(timer);}
+}
+function filters(){return {start:$('start').value,end:$('end').value,shop:$('shop').value,bill:$('bill').value.trim(),status:$('result').value};}
+function params(extra={}){return new URLSearchParams({...filters(),...extra});}
+function option(value,label){const el=document.createElement('option');el.value=value;el.textContent=label;return el;}
+function fieldValue(key,value){
+ if(value===null||value===undefined||value==='')return copy('dash');
+ if(key==='result')return CONFIG.statuses[value]||value;
+ if(CONFIG.numeric.includes(key))return number.format(Number(value));
+ if(CONFIG.timestamps.includes(key)){const date=new Date(String(value).replace(' ','T')+CONFIG.offset);if(!Number.isNaN(date.valueOf()))return dates.format(date);}
+ return typeof value==='object'?JSON.stringify(value):String(value);
+}
+function render(data){
+ state.page=data.page;state.pages=data.pages;$('table-title').textContent=CONFIG.datasets[$('kind').value];$('count').textContent=copy('records',{count:number.format(data.total)});
+ $('page-info').textContent=copy('page',{page:number.format(data.page),pages:number.format(data.pages)});$('thead').replaceChildren();$('tbody').replaceChildren();$('empty').hidden=data.total!==0;
+ const columns=CONFIG.visible[$('kind').value]||data.columns;const head=document.createElement('tr');
+ for(const key of [...columns,'detail']){const th=document.createElement('th');th.scope='col';th.textContent=CONFIG.columns[key]||copy('detail');head.append(th);}$('thead').append(head);
+ for(const row of data.rows){const tr=document.createElement('tr');for(const key of columns){const td=document.createElement('td');td.textContent=fieldValue(key,row[key]);if(CONFIG.numeric.includes(key))td.className='number';tr.append(td);}
+ const td=document.createElement('td'),details=document.createElement('details'),title=document.createElement('summary'),dl=document.createElement('dl');title.textContent=copy('detail');details.append(title);
+ for(const key of data.columns){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=CONFIG.columns[key]||key;dd.textContent=fieldValue(key,row[key]);dl.append(dt,dd);}details.append(dl);td.append(details);tr.append(td);$('tbody').append(tr);}
+}
+function datasetControls(){const dated=CONFIG.dated.includes($('kind').value);for(const id of ['start','end','shop','bill','today'])$(id).disabled=!dated;$('result').disabled=$('kind').value!=='attempts';$('filter-note').textContent=copy(dated?'rangeNote':'configNote');}
+function validate(){const valid=Boolean($('start').value&&$('end').value&&$('start').value<=$('end').value);for(const id of ['start','end'])$(id).setAttribute('aria-invalid',String(!valid));if(!valid){status(copy('invalidRange'),true);$('start').focus();}return valid;}
+async function load(){
+ if(state.busy||!state.token||!validate())return;const generation=++state.generation;busy(true);status(copy('loading'));
+ try{const query=params({page:state.page});const [report,summary]=await Promise.all([api('/reports/'+$('kind').value+'?'+query).then(r=>r.json()),api('/summary?'+params()).then(r=>r.json())]);
+ if(generation!==state.generation||!state.token)return;render(report);for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=number.format(summary[key]);status();
+ }catch(error){$('tbody').replaceChildren();$('count').textContent=copy('dash');for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');status(error.message,true);}
+ finally{busy(false);datasetControls();}
+}
+async function initialize(){const meta=await (await api('/meta')).json();state.meta=meta;$('start').value=meta.start;$('end').value=meta.end;$('shop').replaceChildren(option('',copy('all')),...meta.shops.map(s=>option(s.shop_code,s.shop_code+' · '+s.name)));$('result').replaceChildren(option('',copy('all')),...meta.statuses.map(s=>option(s,CONFIG.statuses[s]||s)));$('timezone').textContent=copy('timezone',{zone:meta.timezone});$('login-panel').hidden=true;$('dashboard').hidden=false;$('logout').hidden=false;$('password').value='';datasetControls();}
+document.getElementById('login-form').addEventListener('submit',async event=>{event.preventDefault();if(state.busy)return;for(const id of ['username','password'])$(id).setAttribute('aria-invalid',String(!$(id).value));if(!$('username').value||!$('password').value){status(copy('required'),true);(!$('username').value?$('username'):$('password')).focus();return;}busy(true);status(copy('loading'));try{const result=await (await api('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('username').value,password:$('password').value})})).json();state.token=result.token;await initialize();}catch(error){status(error.message,true);}finally{busy(false);}if(state.token&&!$('dashboard').hidden)await load();});
+document.getElementById('logout').addEventListener('click',async()=>{if(state.busy)return;busy(true);let failed=false;try{await api('/logout',{method:'POST'});}catch{failed=true;}finally{lock(copy(failed?'logoutOffline':'loggedOut'));status(copy(failed?'logoutOffline':'loggedOut'),failed);busy(false);}});
+document.getElementById('toggle-password').addEventListener('click',()=>{const shown=$('password').type==='password';$('password').type=shown?'text':'password';$('toggle-password').textContent=copy(shown?'hidePassword':'showPassword');$('toggle-password').setAttribute('aria-pressed',String(shown));});
+document.getElementById('filter-form').addEventListener('submit',event=>{event.preventDefault();state.page=1;load();});
+document.getElementById('kind').addEventListener('change',()=>{datasetControls();state.page=1;load();});
+document.getElementById('bill').addEventListener('input',()=>{$('clear-search').hidden=!$('bill').value;});
+document.getElementById('clear-search').addEventListener('click',()=>{$('bill').value='';$('clear-search').hidden=true;$('bill').focus();state.page=1;load();});
+document.getElementById('today').addEventListener('click',async()=>{if(state.busy)return;busy(true);try{const meta=await (await api('/meta')).json();$('start').value=meta.start;$('end').value=meta.end;state.page=1;}catch(error){status(error.message,true);busy(false);datasetControls();return;}busy(false);datasetControls();load();});
+document.getElementById('prev').addEventListener('click',()=>{state.page--;load();});document.getElementById('next').addEventListener('click',()=>{state.page++;load();});
+document.getElementById('export').addEventListener('click',async()=>{if(state.busy||!validate())return;busy(true);status(copy('exporting'));try{const response=await api('/reports/'+$('kind').value+'?'+params({format:'csv'}));const blob=await response.blob();const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=CONFIG.filenamePrefix+$('kind').value+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),CONFIG.timeoutMs);status(copy('saved'));}catch(error){status(error.message,true);}finally{busy(false);datasetControls();}});
+document.querySelectorAll('[data-copy]').forEach(el=>el.textContent=copy(el.dataset.copy));$('kind').replaceChildren(...Object.entries(CONFIG.datasets).map(([key,label])=>option(key,label)));$('caption').textContent=copy('caption');$('metrics').setAttribute('aria-label',copy('summaryNote'));for(const id of ['start','end'])$(id).step=CONFIG.dateStep;
+const font=document.createElement('link');font.rel='stylesheet';font.href=CONFIG.fontUrl;document.head.append(font);
+</script>
+</body>
+</html>
