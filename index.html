@@ -205,6 +205,8 @@ h1:focus{outline:none}
       adminContact: 'ติดต่อแอดมิน',
       errorTitle: 'ERROR WARRING',
       errorBody: 'เกิดข้อผิดพลาด QR Code นี้ไม่สามารถรับใบเสร็จได้ กรุณาลองใหม่ หรือติดต่อ พนักงานหน้าร้าน หากไม่สะดวกสามารถติดต่อพนักงานแอดมิน',
+      belowMinTitle: 'ยอดไม่ถึงขั้นต่ำ',
+      belowMinBody: 'ยอดที่ใช้คำนวณแต้ม {amount} บาท ต้องมียอดขั้นต่ำ {minimum} บาท จึงจะรับแต้มได้',
       retry: 'ลองอีกครั้ง', ready: '', initializing: 'กำลังเตรียมการสแกน…',
       openingCamera: 'กำลังเปิดกล้อง…', cameraFallback: 'ใช้การถ่ายรูปใบเสร็จแทนได้จากปุ่มด้านล่าง',
       decoding: 'กำลังอ่านใบเสร็จ…', submitting: 'กำลังตรวจสอบใบเสร็จ…',
@@ -1201,10 +1203,16 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     $(name).querySelector('h1, h2').focus({preventScroll: true});
     document.title = CONFIG.messages.title;
   }
-  function showError(reason) {
+  function showError(reason, details = {}) {
     const duplicate = reason === 'duplicate';
     $('error-title').textContent = CONFIG.messages[duplicate ? 'duplicateTitle' : 'errorTitle'];
     document.querySelector('#error .copy').textContent = CONFIG.messages[duplicate ? 'duplicateBody' : 'errorBody'];
+    if (reason === 'below_min' && Number.isFinite(details.amount) && Number.isFinite(details.minimum_amount)) {
+      $('error-title').textContent = CONFIG.messages.belowMinTitle;
+      document.querySelector('#error .copy').textContent = CONFIG.messages.belowMinBody
+        .replace('{amount}', moneyFormat.format(details.amount))
+        .replace('{minimum}', moneyFormat.format(details.minimum_amount));
+    }
     $('line-link').removeAttribute('href');
     setBusy(false);
     showScreen('error');
@@ -1383,6 +1391,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     if (!result.ok || !body.ok) {
       const failure = new Error('claim');
       failure.reason = body.reason;
+      failure.details = body;
       throw failure;
     }
     const url = new URL(body.line_url);
@@ -1407,7 +1416,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
         if (parsed) { await submit(parsed, generation); return; }
       }
       state.timer = setTimeout(() => scanLive(generation), CONFIG.liveIntervalMs);
-    } catch (error) { if (generation === state.generation) showError(error.reason); }
+    } catch (error) { if (generation === state.generation) showError(error.reason, error.details); }
   }
   async function openCamera() {
     if (state.busy || !state.ready) return;
@@ -1435,7 +1444,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       await loadPhoto(file);
       const parsed = await decodePhoto(generation);
       await submit(parsed, generation);
-    } catch (error) { if (generation === state.generation) showError(error.reason); }
+    } catch (error) { if (generation === state.generation) showError(error.reason, error.details); }
     finally { $('file').value = ''; }
   }
   document.querySelectorAll('[data-copy]').forEach(element => { element.textContent = CONFIG.messages[element.dataset.copy]; });
