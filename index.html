@@ -199,6 +199,8 @@ h1:focus{outline:none}
       points: 'แต้ม', pointsLabel: 'แต้มที่จะได้รับ', scanAgain: 'สแกนใบใหม่', bill: 'เลขที่ใบเสร็จ', shop: 'สาขา', date: 'วันที่', amount: 'ยอดที่ใช้รับแต้ม',
       line: 'รับแต้มบน LINE', lineNote: 'กดปุ่มเพื่อเปิด LINE และรับแต้มให้เรียบร้อย',
       capped: 'ได้รับแต้มตามเพดานต่อใบเสร็จ',
+      duplicateTitle: 'ใบเสร็จซ้ำ',
+      duplicateBody: 'ใบเสร็จนี้รับแต้มไปแล้ว ไม่สามารถรับแต้มซ้ำได้',
       errorTitle: 'ยังรับแต้มไม่ได้',
       errorBody: 'ยังไม่สามารถรับแต้มจากใบเสร็จนี้ได้ กรุณาลองใหม่หรือติดต่อพนักงาน',
       retry: 'ลองอีกครั้ง', ready: '', initializing: 'กำลังเตรียมการสแกน…',
@@ -1197,7 +1199,14 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     $(name).querySelector('h1, h2').focus({preventScroll: true});
     document.title = CONFIG.messages.title;
   }
-  function showError() { setBusy(false); showScreen('error'); }
+  function showError(reason) {
+    const duplicate = reason === 'duplicate';
+    $('error-title').textContent = CONFIG.messages[duplicate ? 'duplicateTitle' : 'errorTitle'];
+    document.querySelector('#error .copy').textContent = CONFIG.messages[duplicate ? 'duplicateBody' : 'errorBody'];
+    $('line-link').removeAttribute('href');
+    setBusy(false);
+    showScreen('error');
+  }
   function reset() {
     state.generation++;
     state.controller?.abort();
@@ -1358,7 +1367,11 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     const result = await timedFetch(CONFIG.API_URL + CONFIG.endpoints.claim, {method: 'POST', body: form});
     const body = await result.json();
     if (generation !== state.generation) return;
-    if (!result.ok || !body.ok) throw new Error('claim');
+    if (!result.ok || !body.ok) {
+      const failure = new Error('claim');
+      failure.reason = body.reason;
+      throw failure;
+    }
     const url = new URL(body.line_url);
     if (url.protocol !== 'https:') throw new Error('link');
     $('points').textContent = numberFormat.format(body.points);
@@ -1381,7 +1394,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
         if (parsed) { await submit(parsed, generation); return; }
       }
       state.timer = setTimeout(() => scanLive(generation), CONFIG.liveIntervalMs);
-    } catch { if (generation === state.generation) showError(); }
+    } catch (error) { if (generation === state.generation) showError(error.reason); }
   }
   async function openCamera() {
     if (state.busy || !state.ready) return;
@@ -1409,7 +1422,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       await loadPhoto(file);
       const parsed = await decodePhoto(generation);
       await submit(parsed, generation);
-    } catch { if (generation === state.generation) showError(); }
+    } catch (error) { if (generation === state.generation) showError(error.reason); }
     finally { $('file').value = ''; }
   }
   document.querySelectorAll('[data-copy]').forEach(element => { element.textContent = CONFIG.messages[element.dataset.copy]; });
