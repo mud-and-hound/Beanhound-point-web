@@ -143,6 +143,7 @@ h1:focus{outline:none}
         <p class="sub copy" data-copy="errorBody"></p>
       </div>
       <button id="retry" class="btn p" data-copy="retry"></button>
+      <a id="admin-link" class="btn g mt-s" target="_blank" rel="noopener noreferrer" data-copy="adminContact" hidden></a>
     </section>
     <p id="status" role="status" aria-live="polite"></p>
   </main>
@@ -201,8 +202,9 @@ h1:focus{outline:none}
       capped: 'ได้รับแต้มตามเพดานต่อใบเสร็จ',
       duplicateTitle: 'ใบเสร็จซ้ำ',
       duplicateBody: 'ใบเสร็จนี้รับแต้มไปแล้ว ไม่สามารถรับแต้มซ้ำได้',
-      errorTitle: 'ยังรับแต้มไม่ได้',
-      errorBody: 'ยังไม่สามารถรับแต้มจากใบเสร็จนี้ได้ กรุณาลองใหม่หรือติดต่อพนักงาน',
+      adminContact: 'ติดต่อแอดมิน',
+      errorTitle: 'ERROR WARRING',
+      errorBody: 'เกิดข้อผิดพลาด QR Code นี้ไม่สามารถรับใบเสร็จได้ กรุณาลองใหม่ หรือติดต่อ พนักงานหน้าร้าน หากไม่สะดวกสามารถติดต่อพนักงานแอดมิน',
       retry: 'ลองอีกครั้ง', ready: '', initializing: 'กำลังเตรียมการสแกน…',
       openingCamera: 'กำลังเปิดกล้อง…', cameraFallback: 'ใช้การถ่ายรูปใบเสร็จแทนได้จากปุ่มด้านล่าง',
       decoding: 'กำลังอ่านใบเสร็จ…', submitting: 'กำลังตรวจสอบใบเสร็จ…',
@@ -1231,6 +1233,17 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       const result = await timedFetch(CONFIG.API_URL + CONFIG.endpoints.config, {}, CONFIG.configTimeoutMs);
       if (!result.ok) throw new Error('config');
       const remote = await result.json();
+      $('admin-link').hidden = true;
+      $('admin-link').removeAttribute('href');
+      if (remote.support_line_url) {
+        try {
+          const contact = new URL(remote.support_line_url);
+          if (contact.protocol === 'https:') {
+            $('admin-link').href = contact.href;
+            $('admin-link').hidden = false;
+          }
+        } catch { /* Invalid contact configuration does not block scanning. */ }
+      }
       CONFIG.etaxPattern = new RegExp(remote.etax_url_pattern, 'i');
       CONFIG.maxUploadBytes = Number(remote.max_upload_mb) * CONFIG.bytesPerMB;
       if (!Number.isFinite(CONFIG.maxUploadBytes) || CONFIG.maxUploadBytes <= 0) throw new Error('config');
