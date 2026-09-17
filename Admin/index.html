@@ -14,7 +14,7 @@
  --icon:18px;--mascot:42px;--avatar:30px;--cell-min:64px;--cell-width:190px;--cell-preview:2.9em;
  --cell-expanded:240px;--row-pad:12px;--profile-width:174px;--device-width:280px;--table-min:150px;
  --page-max:1680px;--login-width:400px;--table-max:62vh;--line-height:1.65;--motion:140ms;
- --scrollbar:10px;--focus:2px;--dialog-width:480px;--dialog-backdrop:#24252266;--summary-gap:8px;--row-number:#7a7d72;--date-width:420px;--date-time-columns:3;--date-message-height:3.5em;
+ --scrollbar:10px;--focus:2px;--dialog-width:480px;--dialog-backdrop:#24252266;--summary-gap:8px;--row-number:#7a7d72;--date-width:420px;--date-time-columns:3;--date-message-height:3.5em;--export-radio:18px;--export-message-height:1.8em;
 }
 *{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--scroll) var(--soft)}
 ::-webkit-scrollbar{width:var(--scrollbar);height:var(--scrollbar)}
@@ -140,6 +140,19 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
 #date-message[data-error=true]{color:var(--danger)}
 .date-actions{display:flex;gap:var(--gap);justify-content:flex-end}
 .date-actions button{flex:1}
+#export-form{display:grid;gap:var(--gap)}
+#export-help,#export-range{font-size:var(--small)}
+#export-range{padding:var(--gap);border-radius:var(--control-radius);background:var(--soft)}
+.export-options{border:0;padding:0;margin:0;display:grid;gap:var(--gap);min-width:0}
+.export-options legend{padding:0;margin-bottom:var(--summary-gap);color:var(--muted);font-size:var(--small)}
+.export-option{display:flex;gap:var(--gap);align-items:center;padding:var(--panel-pad);border:1px solid var(--line);border-radius:var(--control-radius);margin:0;cursor:pointer;color:var(--ink)}
+.export-option:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.export-option:has(input:focus-visible){outline:var(--focus) solid var(--accent);outline-offset:var(--focus)}
+.export-option input{width:var(--export-radio);height:var(--export-radio);flex-shrink:0;padding:0;margin:0;accent-color:var(--accent)}
+.export-option strong{display:block;font-size:var(--subheading);font-weight:500}
+.export-option small{display:block;color:var(--muted);font-size:var(--small);font-weight:400}
+#export-error{min-height:var(--export-message-height);font-size:var(--small)}
+#export-error[data-error=true]{color:var(--danger)}
 [aria-invalid=true]{outline:var(--focus) solid var(--danger);outline-offset:0}
 </style>
 </head>
@@ -175,13 +188,25 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
   <p class="filter-note" id="filter-note"></p>
  </form>
  <section class="report" aria-labelledby="table-title">
-  <div class="report-head"><div class="report-heading"><span class="icon" data-icon="receipt" aria-hidden="true"></span><div><h2 id="table-title"></h2><p id="count"></p></div></div><div class="export-actions"><button id="export-excel" data-copy="exportExcel" data-button-icon="download"></button><button id="export-all" class="secondary" data-copy="exportAll" data-button-icon="download"></button><button id="export" class="secondary" data-copy="export" data-button-icon="download"></button></div></div>
+  <div class="report-head"><div class="report-heading"><span class="icon" data-icon="receipt" aria-hidden="true"></span><div><h2 id="table-title"></h2><p id="count"></p></div></div><div class="export-actions"><button id="export-open" data-copy="exportOpen" data-button-icon="download" aria-haspopup="dialog" aria-controls="export-dialog" disabled></button></div></div>
   <p id="applied-range"></p><div id="table-feedback" hidden><p id="table-error" role="status"></p><button id="report-retry" type="button" data-copy="retry"></button></div><div class="table-scroll" tabindex="0" role="region" aria-labelledby="caption"><table><caption id="caption"></caption><thead id="thead"></thead><tbody id="tbody"></tbody></table><p id="empty" data-copy="empty" hidden></p></div>
   <div class="pagination"><p id="page-info"></p><div><button id="prev" class="secondary" data-copy="prev" data-button-icon="previous"></button><button id="next" class="secondary" data-copy="next" data-button-icon="next"></button></div></div>
  </section>
  <footer data-copy="footer"></footer>
 </section>
 </main>
+<dialog id="export-dialog" aria-labelledby="export-title" aria-describedby="export-help">
+ <form id="export-form" novalidate>
+  <h2 id="export-title" data-copy="exportTitle"></h2><p id="export-help" data-copy="exportHelp"></p>
+  <p id="export-range"></p>
+  <fieldset class="export-options"><legend data-copy="exportChoose"></legend>
+   <label class="export-option" for="export-summary"><input id="export-summary" name="export-mode" type="radio" value="summary" checked><span><strong data-copy="exportSummary"></strong><small id="export-summary-hint"></small></span></label>
+   <label class="export-option" for="export-detail"><input id="export-detail" name="export-mode" type="radio" value="detail"><span><strong data-copy="exportDetail"></strong><small id="export-detail-hint"></small></span></label>
+  </fieldset>
+  <p id="export-error" role="status" aria-live="polite"></p>
+  <div class="date-actions"><button id="export-cancel" type="button" class="secondary" data-copy="exportCancel"></button><button id="export-confirm" type="submit" data-copy="exportExcel" data-button-icon="download"></button></div>
+ </form>
+</dialog>
 <dialog id="device-dialog" aria-labelledby="device-title" aria-describedby="device-source">
  <div class="dialog-head"><h2 id="device-title"></h2><button id="device-close" type="button" class="secondary" data-copy="close"></button></div>
  <p id="device-source" data-copy="deviceSource"></p><div id="device-value"></div>
@@ -209,11 +234,11 @@ const CONFIG = {
  icons:{hound:'icons/hound.svg',receipt:'icons/receipt.svg',beans:'icons/beans.svg',scan:'icons/scan.svg',repeat:'icons/repeat.svg',download:'icons/download.svg',phone:'icons/phone.svg',profile:'icons/profile.svg',search:'icons/search.svg',calendar:'icons/calendar.svg',logout:'icons/logout.svg',previous:'icons/previous.svg',next:'icons/next.svg',sortAsc:'icons/sort-asc.svg',sortDesc:'icons/sort-desc.svg'},
  claimColumns:['id','shop_code','shop_name','bill_no','bill_date','amount_net','points','tier_amount','line_user_id','user_agent','created_at'],
  profileFields:{name:'line_display_name',picture:'line_picture_url'},profileProtocols:['https:'],
- deviceRules:[{pattern:/iPad/i,label:'iPad'},{pattern:/iPhone/i,label:'iPhone'},{pattern:/Android/i,label:'Android'},{pattern:/Windows/i,label:'Windows'},{pattern:/Macintosh|Mac OS/i,label:'Mac'},{pattern:/Linux/i,label:'Linux'}],
+ deviceRules:[{tokens:['iPad'],label:'iPad'},{tokens:['iPhone'],label:'iPhone'},{tokens:['Android'],label:'Android'},{tokens:['Windows'],label:'Windows'},{tokens:['Macintosh','Mac OS'],label:'Mac'},{tokens:['Linux'],label:'Linux'}],
  cellPreviewChars:60, sortDirections:{asc:'ascending',desc:'descending'},sortIcons:{none:'sortAsc',asc:'sortAsc',desc:'sortDesc'},
  API_URL:'https://beanhoundscan.mobile1234.site', prefix:'/api/admin', fontUrl:'fonts/prompt.css',
  locale:'th-TH', timezone:'Asia/Bangkok', offset:'+07:00', timeoutMs:30000, searchDelayMs:300, dateStep:1,
- unauthorizedStatus:401, filenamePrefix:'beanhound-',exportAllPath:'/export.xlsx',allReportsFilename:'all-reports', numberOptions:{maximumFractionDigits:2},
+ unauthorizedStatus:401, filenamePrefix:'beanhound-',exportAllPath:'/export.xlsx',exportSummaryPath:'/export-summary',exportFormat:'xlsx',summaryFilenameSuffix:'-summary',allReportsFilename:'all-reports', numberOptions:{maximumFractionDigits:2},
  dateOptions:{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Bangkok'},
  datasets:{claims:'รายการรับแต้ม',attempts:'ประวัติการสแกน',duplicates:'จำนวนสแกนซ้ำรายใบ',shops:'ข้อมูลสาขา',rules:'กติกาแต้ม',tiers:'ขั้นอัตราแต้ม',links:'ลิงก์ LINE'},
  dated:['claims','attempts','duplicates'],
@@ -222,21 +247,21 @@ const CONFIG = {
  numeric:['id','tier_amount','points','amount','amount_net','amount_gross','amount_used','duplicate_scan_count','min_amount','reward_max','max_points_per_bill','claim_window_min'],
  timestamps:['reward_clicked_at','created_at','updated_at','first_duplicate_at','last_duplicate_at','effective_from','effective_to'],
  statuses:{ok:'สแกนผ่าน / กลับมารับแต้ม',duplicate:'ใบเสร็จซ้ำ',bill_mismatch:'เลขบิลไม่ตรง',reprint:'ใบพิมพ์ซ้ำ',expired:'เกินเวลา',shop_closed:'สาขาปิดใช้งาน',unreadable:'อ่านไม่ได้',below_min:'ยอดไม่ถึง',no_link:'ไม่มีลิงก์รับแต้ม',rate_limited:'เกินจำนวนครั้ง',error:'ข้อผิดพลาด'},
- messages:{dateHelp:'เลือกวันและเวลา (เวลาไทย) แล้วกดตกลงเพื่ออัปเดตรายงาน',datePending:'ยังไม่ได้ใช้วันเวลาที่เลือก กดตกลงเพื่อแสดงรายงาน หรือยกเลิกเพื่อใช้ค่าเดิม',dateConfirm:'ตกลงและแสดงรายงาน',dateCancel:'ยกเลิก',dateHour:'ชั่วโมง',dateMinute:'นาที',dateSecond:'วินาที',datePrevious:'เดือนก่อน',dateNext:'เดือนถัดไป',dateInvalidTime:'ระบุเวลาให้ครบ ชั่วโมง 0–23 และนาที/วินาที 0–59',dateUnavailable:'เปิดปฏิทินไม่ได้ กรุณารีเฟรชหน้าเว็บแล้วลองใหม่',reportReady:'อัปเดตรายงานแล้ว',reportUpdated:'อัปเดตรายงานตามช่วงเวลาที่เลือกแล้ว',close:'ปิด',retry:'ลองโหลดอีกครั้ง',reportRequired:'กดแสดงรายงานก่อนดาวน์โหลดข้อมูล',appliedRange:'ข้อมูลที่แสดง: {start} ถึง {end}',currentConfig:'ข้อมูลตั้งค่าปัจจุบัน',unknownColumn:'ข้อมูลเพิ่มเติม',lineMissing:'ยังไม่มีข้อมูล LINE',lineProfileMissing:'ยังไม่มีชื่อโปรไฟล์',lineId:'เลขไอดี LINE',lineDetail:'ดูรายละเอียด LINE',deviceDetail:'ดูรายละเอียดอุปกรณ์ที่สแกน',deviceUnknown:'ไม่สามารถระบุอุปกรณ์ได้',deviceMissing:'ไม่มีข้อมูลอุปกรณ์',deviceSource:'ข้อมูลที่เบราว์เซอร์ส่งมา',sortHint:'กดเพื่อเรียง {column} {direction}',asc:'จากน้อยไปมาก',desc:'จากมากไปน้อย',brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'BEANHOUND / REPORTS',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'ตรวจสอบใบเสร็จ การสแกน และแต้มในที่เดียว',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',apply:'แสดงรายงาน',today:'วันนี้',claims:'ใบเสร็จผ่านการตรวจ',points:'แต้มที่คำนวณได้',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',export:'CSV',exportExcel:'ดาวน์โหลด Excel',exportAll:'Excel ทุกรายงาน',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'Export Excel / CSV รวมข้อมูลทุกคอลัมน์ตามตัวกรอง',all:'ทั้งหมด',detail:'ดูรายละเอียด',collapse:'ย่อรายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์รายงาน…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'วันเวลาเริ่มต้นต้องไม่เกินวันเวลาสิ้นสุด กรุณาเลือกใหม่',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'กรองตามเวลาที่บันทึก ตั้งแต่เวลาเริ่มต้นถึงเวลาสิ้นสุด รวมเวลาที่ระบุ',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'กดหัวคอลัมน์เพื่อสลับการเรียง • เลื่อนซ้าย–ขวาเพื่อดูทุกคอลัมน์ • กดดูรายละเอียดสำหรับข้อมูลยาว • Export ได้ครบตามตัวกรอง',ellipsis:'…',dash:'—'}
+ messages:{exportOpen:'Export รายงาน',exportTitle:'ดาวน์โหลดรายงาน',exportHelp:'เลือกข้อมูลที่ต้องการในไฟล์ Excel โดยใช้ตัวกรองที่แสดงรายงานแล้ว',exportChoose:'รูปแบบข้อมูล',exportSummary:'สรุป · ตามหน้าเว็บ',exportDetail:'Detail · รายละเอียดทั้งหมด',exportSummaryHint:'{columns} คอลัมน์ตามตารางนี้ · ครบทุกรายการที่ตรงตัวกรอง',exportDetailHint:'{reports} รายงาน · ทุกคอลัมน์ แยกเป็นชีตในไฟล์เดียว',exportCancel:'ยกเลิก',dateHelp:'เลือกวันและเวลา (เวลาไทย) แล้วกดตกลงเพื่ออัปเดตรายงาน',datePending:'ยังไม่ได้ใช้วันเวลาที่เลือก กดตกลงเพื่อแสดงรายงาน หรือยกเลิกเพื่อใช้ค่าเดิม',dateConfirm:'ตกลงและแสดงรายงาน',dateCancel:'ยกเลิก',dateHour:'ชั่วโมง',dateMinute:'นาที',dateSecond:'วินาที',datePrevious:'เดือนก่อน',dateNext:'เดือนถัดไป',dateInvalidTime:'ระบุเวลาให้ครบ ชั่วโมง 0–23 และนาที/วินาที 0–59',dateUnavailable:'เปิดปฏิทินไม่ได้ กรุณารีเฟรชหน้าเว็บแล้วลองใหม่',reportReady:'อัปเดตรายงานแล้ว',reportUpdated:'อัปเดตรายงานตามช่วงเวลาที่เลือกแล้ว',close:'ปิด',retry:'ลองโหลดอีกครั้ง',reportRequired:'กดแสดงรายงานก่อนดาวน์โหลดข้อมูล',appliedRange:'ข้อมูลที่แสดง: {start} ถึง {end}',currentConfig:'ข้อมูลตั้งค่าปัจจุบัน',unknownColumn:'ข้อมูลเพิ่มเติม',lineMissing:'ยังไม่มีข้อมูล LINE',lineProfileMissing:'ยังไม่มีชื่อโปรไฟล์',lineId:'เลขไอดี LINE',lineDetail:'ดูรายละเอียด LINE',deviceDetail:'ดูรายละเอียดอุปกรณ์ที่สแกน',deviceUnknown:'ไม่สามารถระบุอุปกรณ์ได้',deviceMissing:'ไม่มีข้อมูลอุปกรณ์',deviceSource:'ข้อมูลที่เบราว์เซอร์ส่งมา',sortHint:'กดเพื่อเรียง {column} {direction}',asc:'จากน้อยไปมาก',desc:'จากมากไปน้อย',brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'BEANHOUND / REPORTS',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'ตรวจสอบใบเสร็จ การสแกน และแต้มในที่เดียว',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',apply:'แสดงรายงาน',today:'วันนี้',claims:'ใบเสร็จผ่านการตรวจ',points:'แต้มที่คำนวณได้',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',exportExcel:'ดาวน์โหลด Excel',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'Export แบบสรุปตามคอลัมน์บนเว็บ หรือ Detail ครบทุกคอลัมน์ของทุกรายงาน',all:'ทั้งหมด',detail:'ดูรายละเอียด',collapse:'ย่อรายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์รายงาน…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'วันเวลาเริ่มต้นต้องไม่เกินวันเวลาสิ้นสุด กรุณาเลือกใหม่',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'กรองตามเวลาที่บันทึก ตั้งแต่เวลาเริ่มต้นถึงเวลาสิ้นสุด รวมเวลาที่ระบุ',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'กดหัวคอลัมน์เพื่อสลับการเรียง • เลื่อนซ้าย–ขวาเพื่อดูทุกคอลัมน์ • กดดูรายละเอียดสำหรับข้อมูลยาว • Export รวมทุกรายการที่ตรงตัวกรอง',ellipsis:'…',dash:'—'}
 };
 </script>
 <script id="app-main">
 'use strict';
 const $=id=>document.getElementById(id);
-const state={token:null,page:1,pages:1,busy:false,meta:null,controller:null,generation:0,appliedFilters:null,deviceTrigger:null,dateDraft:null,sort:'',direction:'asc'};
+const state={token:null,page:1,pages:1,busy:false,meta:null,controller:null,generation:0,appliedFilters:null,appliedColumns:[],deviceTrigger:null,dateDraft:null,sort:'',direction:'asc'};
 const number=new Intl.NumberFormat(CONFIG.locale,CONFIG.numberOptions);
 const dates=new Intl.DateTimeFormat(CONFIG.locale,CONFIG.dateOptions);
 const dateLabels=new Intl.DateTimeFormat(CONFIG.locale,{...CONFIG.calendar.displayOptions,timeZone:CONFIG.timezone});
 const calendarReady=import(CONFIG.calendar.script).then(()=>true,()=>false);
 const copy=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',v),CONFIG.messages[key]);
 function status(message='',error=false){$('status').textContent=message;$('status').dataset.error=String(error);}
-function busy(value){state.busy=value;document.querySelectorAll('button,input,select').forEach(el=>el.disabled=value);$('prev').disabled=value||state.page<=1;$('next').disabled=value||state.page>=state.pages;for(const id of ['export','export-excel','export-all'])$(id).disabled=value||!state.appliedFilters;$('dashboard').setAttribute('aria-busy',String(value));}
-function lock(message){state.generation++;state.token=null;state.meta=null;state.appliedFilters=null;if($('date-dialog').open)$('date-dialog').close();if($('device-dialog').open)$('device-dialog').close();$('device-value').textContent='';$('device-title').textContent='';$('table-feedback').hidden=true;$('applied-range').textContent='';for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');$('count').textContent='';$('page-info').textContent='';$('password').type='password';$('toggle-password').textContent=copy('showPassword');$('toggle-password').setAttribute('aria-pressed','false');$('password').value='';$('tbody').replaceChildren();$('thead').replaceChildren();$('dashboard').hidden=true;$('login-panel').hidden=false;$('logout').hidden=true;status(message,true);$('username').disabled=false;$('username').focus();}
+function busy(value){state.busy=value;document.querySelectorAll('button,input,select').forEach(el=>el.disabled=value);$('prev').disabled=value||state.page<=1;$('next').disabled=value||state.page>=state.pages;$('export-open').disabled=value||!state.appliedFilters;$('dashboard').setAttribute('aria-busy',String(value));}
+function lock(message){state.generation++;state.token=null;state.meta=null;state.appliedFilters=null;state.appliedColumns=[];if($('export-dialog').open)$('export-dialog').close();if($('date-dialog').open)$('date-dialog').close();if($('device-dialog').open)$('device-dialog').close();$('device-value').textContent='';$('device-title').textContent='';$('table-feedback').hidden=true;$('applied-range').textContent='';for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');$('count').textContent='';$('page-info').textContent='';$('password').type='password';$('toggle-password').textContent=copy('showPassword');$('toggle-password').setAttribute('aria-pressed','false');$('password').value='';$('tbody').replaceChildren();$('thead').replaceChildren();$('dashboard').hidden=true;$('login-panel').hidden=false;$('logout').hidden=true;status(message,true);$('username').disabled=false;$('username').focus();}
 async function api(path,options={}){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
  const requestToken=state.token;const headers={...(requestToken?{Authorization:'Bearer '+requestToken}:{}),...options.headers};
@@ -296,12 +321,12 @@ function renderProfile(td,row){
 function renderDevice(td,value){
  if(!value){td.textContent=copy('deviceMissing');return;}
  const button=document.createElement('button');button.type='button';button.className='secondary device-button';button.setAttribute('aria-label',copy('deviceDetail'));button.title=copy('deviceDetail');button.append(localIcon('phone'));
- button.addEventListener('click',()=>{state.deviceTrigger=button;$('device-title').textContent=CONFIG.deviceRules.find(rule=>rule.pattern.test(value))?.label||copy('deviceUnknown');$('device-value').textContent=String(value);$('device-dialog').showModal();});td.append(button);
+ button.addEventListener('click',()=>{state.deviceTrigger=button;$('device-title').textContent=CONFIG.deviceRules.find(rule=>rule.tokens.some(token=>String(value).toLowerCase().includes(token.toLowerCase())))?.label||copy('deviceUnknown');$('device-value').textContent=String(value);$('device-dialog').showModal();});td.append(button);
 }
 function render(data){
  state.page=data.page;state.pages=data.pages;$('table-title').textContent=CONFIG.datasets[$('kind').value];$('count').textContent=copy('records',{count:number.format(data.total)});
  $('page-info').textContent=copy('page',{page:number.format(data.page),pages:number.format(data.pages)});$('thead').replaceChildren();$('tbody').replaceChildren();$('empty').hidden=data.total!==0;
- const columns=$('kind').value==='claims'?CONFIG.claimColumns.filter(key=>data.columns.includes(key)):data.columns;const head=document.createElement('tr');
+ const columns=$('kind').value==='claims'?CONFIG.claimColumns.filter(key=>data.columns.includes(key)):data.columns;state.appliedColumns=[...columns];const head=document.createElement('tr');
  for(const key of columns){const th=document.createElement('th'),button=document.createElement('button');th.scope='col';button.type='button';button.className='sort-button';button.dataset.sort=key;const label=CONFIG.columns[key]||copy('unknownColumn');button.textContent=label;const active=state.sort===key;const next=active&&state.direction==='asc'?'desc':'asc';button.setAttribute('aria-label',copy('sortHint',{column:label,direction:copy(next)}));th.setAttribute('aria-sort',active?CONFIG.sortDirections[state.direction]:'none');const arrow=localIcon(CONFIG.sortIcons[active?state.direction:'none'],'icon sort-arrow');button.append(arrow);button.addEventListener('click',()=>{if(state.busy)return;state.sort=key;state.direction=next;state.page=1;load().then(()=>{Array.from(document.querySelectorAll('.sort-button')).find(el=>el.dataset.sort===key)?.focus({preventScroll:true});});});th.append(button);head.append(th);}$('thead').append(head);
  for(const row of data.rows){const tr=document.createElement('tr');for(const key of columns){const td=document.createElement('td');if(key==='line_user_id'){renderProfile(td,row);tr.append(td);continue;}if(key==='user_agent'){renderDevice(td,row[key]);tr.append(td);continue;}const value=fieldValue(key,row[key]);const content=document.createElement('div');content.className='cell-value';content.textContent=value;
 if(value.length>CONFIG.cellPreviewChars||value.includes('\n')){const detail=document.createElement('details'),summary=document.createElement('summary');detail.className='cell-detail';summary.textContent=copy('detail');const preview=document.createElement('div');preview.className='cell-value';preview.textContent=value.slice(0,CONFIG.cellPreviewChars)+copy('ellipsis');td.append(preview);detail.append(summary,content);detail.addEventListener('toggle',()=>{preview.hidden=detail.open;summary.textContent=copy(detail.open?'collapse':'detail');});td.append(detail);}else{content.classList.add('cell-short');td.append(content);}if(CONFIG.numeric.includes(key))td.className='number';tr.append(td);}$('tbody').append(tr);}
@@ -313,7 +338,7 @@ async function load(){
  if(state.busy||!state.token||!validate())return;const generation=++state.generation;const applied=filters();busy(true);$('table-feedback').hidden=true;status(copy('loading'));
  try{const query=new URLSearchParams({...applied,page:state.page});const [report,summary]=await Promise.all([api('/reports/'+$('kind').value+'?'+query).then(r=>r.json()),api('/summary?'+new URLSearchParams(applied)).then(r=>r.json())]);
  if(generation!==state.generation||!state.token)return;state.appliedFilters=applied;render(report);$('applied-range').textContent=CONFIG.dated.includes(applied.sort_report)?copy('appliedRange',{start:applied.start.replace('T',' '),end:applied.end.replace('T',' ')}):copy('currentConfig');for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=number.format(summary[key]);status(copy(CONFIG.dated.includes(applied.sort_report)?'reportUpdated':'reportReady'));
- }catch(error){state.appliedFilters=null;state.page=1;state.pages=1;$('thead').replaceChildren();$('page-info').textContent='';$('empty').hidden=true;$('applied-range').textContent='';if(state.token){$('table-error').textContent=error.message;$('table-feedback').hidden=false;}$('tbody').replaceChildren();$('count').textContent=copy('dash');for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');status(error.message,true);}
+ }catch(error){state.appliedFilters=null;state.appliedColumns=[];state.page=1;state.pages=1;$('thead').replaceChildren();$('page-info').textContent='';$('empty').hidden=true;$('applied-range').textContent='';if(state.token){$('table-error').textContent=error.message;$('table-feedback').hidden=false;}$('tbody').replaceChildren();$('count').textContent=copy('dash');for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');status(error.message,true);}
  finally{busy(false);datasetControls();}
 }
 async function initialize(){const meta=await (await api('/meta')).json();state.meta=meta;$('start').value=meta.start;$('end').value=meta.end;refreshDateLabels();$('shop').replaceChildren(option('',copy('all')),...meta.shops.map(s=>option(s.shop_code,s.shop_code+' · '+s.name)));$('result').replaceChildren(option('',copy('all')),...meta.statuses.map(s=>option(s,CONFIG.statuses[s]||s)));$('timezone').textContent=copy('timezone',{zone:meta.timezone});$('login-panel').hidden=true;$('dashboard').hidden=false;$('logout').hidden=false;$('password').value='';datasetControls();}
@@ -326,7 +351,40 @@ document.getElementById('bill').addEventListener('input',()=>{$('clear-search').
 document.getElementById('clear-search').addEventListener('click',()=>{$('bill').value='';$('clear-search').hidden=true;$('bill').focus();state.page=1;load();});
 document.getElementById('today').addEventListener('click',async()=>{if(state.busy)return;busy(true);try{const meta=await (await api('/meta')).json();$('start').value=meta.start;$('end').value=meta.end;refreshDateLabels();state.page=1;}catch(error){status(error.message,true);busy(false);datasetControls();return;}busy(false);datasetControls();load();});
 document.getElementById('prev').addEventListener('click',()=>{state.page--;load();});document.getElementById('next').addEventListener('click',()=>{state.page++;load();});
-async function exportReport(format,all=false){if(state.busy||!state.token)return;if(!state.appliedFilters){status(copy('reportRequired'),true);return;}busy(true);status(copy('exporting'));try{const name=all?CONFIG.allReportsFilename:state.appliedFilters.sort_report;const path=all?CONFIG.exportAllPath:'/reports/'+name;const response=await api(path+'?'+params({format},true));const blob=await response.blob();const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=CONFIG.filenamePrefix+name+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),CONFIG.timeoutMs);status(copy('saved'));}catch(error){status(error.message,true);}finally{busy(false);datasetControls();}}
+function exportMessage(message='',error=false){$('export-error').textContent=message;$('export-error').dataset.error=String(error);}
+function openExport(){
+ if(state.busy||!state.token)return;if(!state.appliedFilters){status(copy('reportRequired'),true);return;}
+ $('export-summary').checked=true;exportMessage();
+ $('export-range').textContent=CONFIG.datasets[state.appliedFilters.sort_report]+' · '+$('applied-range').textContent;
+ $('export-summary-hint').textContent=copy('exportSummaryHint',{columns:number.format(state.appliedColumns.length)});
+ $('export-detail-hint').textContent=copy('exportDetailHint',{reports:number.format(Object.keys(CONFIG.datasets).length)});
+ $('export-dialog').showModal();$('export-summary').focus();
+}
+function summaryPayload(){
+ const columns=state.appliedColumns;
+ return {report:state.appliedFilters.sort_report,filters:{...state.appliedFilters},columns:columns.map(key=>({key,label:CONFIG.columns[key]||copy('unknownColumn')})),presentation:{
+  empty:copy('dash'),lineMissing:copy('lineMissing'),lineProfileMissing:copy('lineProfileMissing'),deviceMissing:copy('deviceMissing'),deviceUnknown:copy('deviceUnknown'),profileNameField:CONFIG.profileFields.name,deviceRules:CONFIG.deviceRules,
+  statuses:columns.includes('result')?CONFIG.statuses:{},rewardStates:columns.includes('reward_received')?CONFIG.rewardStates:{},timestamps:CONFIG.timestamps.filter(key=>columns.includes(key))
+ }};
+}
+async function exportReport(event){
+ event.preventDefault();if(state.busy||!state.token||!state.appliedFilters)return;
+ const detail=$('export-detail').checked,format=CONFIG.exportFormat;let complete=false;
+ busy(true);$('export-dialog').setAttribute('aria-busy','true');exportMessage(copy('exporting'));status(copy('exporting'));
+ try{
+  const name=detail?CONFIG.allReportsFilename:state.appliedFilters.sort_report+CONFIG.summaryFilenameSuffix;
+  const response=detail?await api(CONFIG.exportAllPath+'?'+params({format},true)):await api(CONFIG.exportSummaryPath,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(summaryPayload())});
+  const blob=await response.blob();if(!state.token)return;
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=CONFIG.filenamePrefix+name+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),CONFIG.timeoutMs);
+  complete=true;status(copy('saved'));
+ }catch(error){if(state.token){exportMessage(error.message,true);status(error.message,true);}}
+ finally{busy(false);datasetControls();$('export-dialog').setAttribute('aria-busy','false');if(complete){$('export-dialog').close();}else if(state.token&&$('export-dialog').open){$('export-confirm').focus();}}
+}
+$('export-open').addEventListener('click',openExport);
+$('export-form').addEventListener('submit',exportReport);
+$('export-cancel').addEventListener('click',()=>{if(!state.busy)$('export-dialog').close();});
+$('export-dialog').addEventListener('cancel',event=>{if(state.busy)event.preventDefault();});
+$('export-dialog').addEventListener('close',()=>{exportMessage();if(state.token&&!$('export-open').disabled)$('export-open').focus();});
 for(const key of ['start','end'])$(key+'-picker').addEventListener('click',()=>openDate(key));
 $('date-form').addEventListener('submit',confirmDate);
 $('date-cancel').addEventListener('click',()=>$('date-dialog').close());
@@ -336,9 +394,6 @@ for(const unit of CONFIG.calendar.units){const input=$('date-'+unit.key);input.m
 document.getElementById('report-retry').addEventListener('click',()=>load());
 document.getElementById('device-close').addEventListener('click',()=>$('device-dialog').close());
 document.getElementById('device-dialog').addEventListener('close',()=>{const trigger=state.deviceTrigger;state.deviceTrigger=null;$('device-value').textContent='';$('device-title').textContent='';if(trigger?.isConnected)trigger.focus();});
-document.getElementById('export').addEventListener('click',()=>exportReport('csv'));
-document.getElementById('export-excel').addEventListener('click',()=>exportReport('xlsx'));
-document.getElementById('export-all').addEventListener('click',()=>exportReport('xlsx',true));
 document.querySelectorAll('[data-copy]').forEach(el=>el.textContent=copy(el.dataset.copy));$('kind').replaceChildren(...Object.entries(CONFIG.datasets).map(([key,label])=>option(key,label)));$('caption').textContent=copy('caption');$('metrics').setAttribute('aria-label',copy('summaryNote'));
 document.querySelectorAll('[data-icon]').forEach(el=>el.style.setProperty('--icon-url','url("'+CONFIG.icons[el.dataset.icon]+'")'));
 document.querySelectorAll('[data-button-icon]').forEach(el=>el.prepend(localIcon(el.dataset.buttonIcon)));
