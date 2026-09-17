@@ -132,7 +132,7 @@ h1:focus{outline:none}
         <div class="ptn" id="points"></div><div class="ptl" data-copy="points"></div>
         <p id="capped" class="note ok result-note" data-copy="capped" hidden></p>
       </div>
-      <a id="line-link" class="btn g mt" target="_blank" rel="noopener noreferrer" data-copy="line"></a>
+      <button id="line-link" class="btn g mt" type="button" data-copy="line"></button>
       <p class="sub" data-copy="lineNote"></p>
       <button class="btn s mt-s" data-home data-copy="scanAgain"></button>
     </section>
@@ -153,7 +153,7 @@ h1:focus{outline:none}
 <script id="app-config">
   const CONFIG = {
     API_URL: 'https://beanhoundscan.mobile1234.site',
-    endpoints: {config: '/api/config', claim: '/api/claim'},
+    endpoints: {config: '/api/config', claim: '/api/claim', receive: '/api/claim/{id}/receive'},
     fontUrl: 'https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=optional',
     locale: 'th-TH-u-ca-buddhist',
     currency: 'THB',
@@ -201,12 +201,14 @@ h1:focus{outline:none}
       line: 'รับแต้มบน LINE', lineNote: 'กดปุ่มเพื่อเปิด LINE และรับแต้มให้เรียบร้อย',
       capped: 'ได้รับแต้มตามเพดานต่อใบเสร็จ',
       duplicateTitle: 'ใบเสร็จซ้ำ',
-      duplicateBody: 'ใบเสร็จนี้รับแต้มไปแล้ว ไม่สามารถรับแต้มซ้ำได้',
+      duplicateBody: 'ใบเสร็จนี้ถูกบันทึกว่าใช้สิทธิ์แล้ว หากยังไม่ได้รับแต้ม กรุณาติดต่อพนักงานหรือแอดมิน',
       adminContact: 'ติดต่อแอดมิน',
       errorTitle: 'ERROR WARRING',
       errorBody: 'เกิดข้อผิดพลาด QR Code นี้ไม่สามารถรับใบเสร็จได้ กรุณาลองใหม่ หรือติดต่อ พนักงานหน้าร้าน หากไม่สะดวกสามารถติดต่อพนักงานแอดมิน',
       belowMinTitle: 'ยอดไม่ถึงขั้นต่ำ',
       belowMinBody: 'ยอดที่ใช้คำนวณแต้ม {amount} บาท ต้องมียอดขั้นต่ำ {minimum} บาท จึงจะรับแต้มได้',
+      receiving: 'กำลังบันทึกการกดรับแต้ม…',
+      receiveError: 'ยังเปิดหน้ารับแต้มไม่ได้ กรุณากดปุ่มรับแต้มอีกครั้ง',
       retry: 'ลองอีกครั้ง', ready: '', initializing: 'กำลังเตรียมการสแกน…',
       openingCamera: 'กำลังเปิดกล้อง…', cameraFallback: 'ใช้การถ่ายรูปใบเสร็จแทนได้จากปุ่มด้านล่าง',
       decoding: 'กำลังอ่านใบเสร็จ…', submitting: 'กำลังตรวจสอบใบเสร็จ…',
@@ -1175,7 +1177,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
 <script id="app-main">
   'use strict';
   const $ = id => document.getElementById(id);
-  const state = {stream: null, timer: null, busy: false, generation: 0, ready: false, detector: null, controller: null};
+  const state = {stream: null, timer: null, busy: false, generation: 0, ready: false, detector: null, controller: null, pending: null};
   const base = $('base'), work = $('work');
   const baseContext = base.getContext('2d', {willReadFrequently: true});
   const workContext = work.getContext('2d', {willReadFrequently: true});
@@ -1213,7 +1215,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
         .replace('{amount}', moneyFormat.format(details.amount))
         .replace('{minimum}', moneyFormat.format(details.minimum_amount));
     }
-    $('line-link').removeAttribute('href');
+    state.pending = null;
     setBusy(false);
     showScreen('error');
   }
@@ -1222,7 +1224,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     state.controller?.abort();
     stopCamera();
     $('file').value = '';
-    $('line-link').removeAttribute('href');
+    state.pending = null;
     base.width = base.height = work.width = work.height = 1;
     setBusy(false);
     showScreen('home');
@@ -1394,17 +1396,32 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       failure.details = body;
       throw failure;
     }
-    const url = new URL(body.line_url);
-    if (url.protocol !== 'https:') throw new Error('link');
+    if (!body.claim_id || !body.claim_token) throw new Error('claim');
+    state.pending = {id: body.claim_id, token: body.claim_token};
     $('points').textContent = numberFormat.format(body.points);
     $('bill-value').textContent = body.bill_no;
     $('shop-value').textContent = body.shop_name;
     $('date-value').textContent = dateFormat.format(new Date(body.date + CONFIG.dateSuffix));
     $('amount-value').textContent = moneyFormat.format(body.amount);
     $('capped').hidden = !body.capped;
-    $('line-link').href = url.href;
     setBusy(false);
     showScreen('result');
+  }
+  async function receiveReward() {
+    if (state.busy || !state.pending) return;
+    setBusy(true, 'receiving');
+    try {
+      const result = await timedFetch(CONFIG.API_URL + CONFIG.endpoints.receive.replace('{id}', state.pending.id),
+        {method: 'POST', headers: {Authorization: 'Bearer ' + state.pending.token}});
+      const body = await result.json();
+      if (!result.ok || !body.ok) throw new Error('receive');
+      const url = new URL(body.line_url);
+      if (url.protocol !== 'https:') throw new Error('link');
+      window.location.assign(url.href);
+      setBusy(false);
+    } catch {
+      setBusy(false, 'receiveError');
+    }
   }
   async function scanLive(generation) {
     if (generation !== state.generation || !state.stream || state.busy) return;
@@ -1457,6 +1474,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
   $('photo').addEventListener('click', () => $('file').click());
   $('file').addEventListener('change', handlePhoto);
   $('retry').addEventListener('click', reset);
+  $('line-link').addEventListener('click', receiveReward);
   document.querySelectorAll('[data-home]').forEach(button => button.addEventListener('click', reset));
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && state.stream) {
