@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BEANHOUND Reports</title>
 <style>
-:root{color-scheme:light;--bg:#f4f4f5;--paper:#fff;--ink:#161616;--muted:#626269;--line:#dcdce0;--soft:#f7f7f8;--accent:#146541;--danger:#a52a25;--radius:10px;--space:24px;--font:Prompt,system-ui,sans-serif;--scroll:#8d8d96;--text:12px;--heading:20px;--subheading:15px;--metric:22px;--brand:15px;--page-pad:16px;--panel-pad:12px;--gap:10px;--control:36px;--table-min:140px}
+:root{color-scheme:light;--bg:#f6f7f3;--paper:#fff;--ink:#253b32;--muted:#626b63;--line:#dce3d9;--soft:#edf2e9;--accent:#146541;--danger:#a52a25;--radius:12px;--space:24px;--font:Prompt,system-ui,sans-serif;--scroll:#8d8d96;--text:12px;--heading:20px;--subheading:15px;--metric:22px;--brand:15px;--page-pad:16px;--panel-pad:12px;--gap:10px;--control:36px;--table-min:140px;--icon:20px;--mascot:44px;--cell-width:190px;--cell-preview:2.9em;--cell-expanded:240px;--row-pad:10px;--pill:99px}
 *{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--scroll) var(--soft)}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--scroll);border:2px solid var(--soft);border-radius:8px}::-webkit-scrollbar-track{background:var(--soft)}
 html{scrollbar-gutter:stable}body{margin:0;color:var(--ink);background:var(--bg);font:var(--text)/1.6 var(--font)}
@@ -25,18 +25,31 @@ main{max-width:1800px;margin:auto;padding:var(--panel-pad) var(--page-pad)}h1{fo
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);margin:var(--gap) 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
 .metric{padding:8px var(--panel-pad)}.metric+.metric{border-left:1px solid var(--line)}.metric span{color:var(--muted);font-size:12px}.metric strong{display:block;font-size:var(--metric);line-height:1.4;font-weight:500;font-variant-numeric:tabular-nums}
 .report{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.report-head{padding:var(--gap) var(--panel-pad);display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid var(--line)}
-.table-scroll{overflow:auto;max-height:65vh;min-height:var(--table-min)}table{border-collapse:collapse;width:100%;font-size:var(--text);text-align:left}caption{text-align:left;padding:6px var(--panel-pad);color:var(--muted);font-size:12px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}th{background:var(--soft);font-weight:500;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere;min-width:120px;max-width:360px}.export-actions{display:flex;gap:8px;flex-wrap:wrap}td.number{text-align:right;font-variant-numeric:tabular-nums}tbody tr:hover{background:var(--soft)}
-details{max-width:380px}summary{cursor:pointer;color:var(--accent);padding:0 4px}dl{white-space:normal;min-width:220px;overflow-wrap:anywhere;margin:12px 0}dt{color:var(--muted);font-size:11px;margin-top:8px}dd{margin:0;font-size:12px}#empty{padding:64px 24px;text-align:center}
+.table-scroll{overflow:auto;max-height:65vh;min-height:var(--table-min)}table{border-collapse:collapse;width:100%;font-size:var(--text);text-align:left}caption{text-align:left;padding:6px var(--panel-pad);color:var(--muted);font-size:12px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}th{background:var(--soft);font-weight:500;position:sticky;top:0}td{white-space:normal;min-width:120px;max-width:var(--cell-width);padding:var(--row-pad) 8px}.export-actions{display:flex;gap:8px;flex-wrap:wrap}td.number{text-align:right;font-variant-numeric:tabular-nums}tbody tr:hover{background:var(--soft)}
+.cell-value{width:var(--cell-width);max-height:var(--cell-preview);overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
+td.number .cell-value{width:auto}.cell-short{max-height:none}
+.cell-detail{width:var(--cell-width)}.cell-detail summary{cursor:pointer;color:var(--accent);font-weight:500;min-height:var(--control);display:flex;align-items:center}
+.cell-detail[open] .cell-value{max-height:var(--cell-expanded);overflow:auto}
+.cell-detail summary::before{content:"+";margin-right:var(--gap)}.cell-detail[open] summary::before{content:"−"}
+.icon{width:var(--icon);height:var(--icon);flex-shrink:0;vertical-align:middle}
+button .icon{margin-right:6px}button:not(.secondary) .icon{filter:brightness(0) invert(1)}
+.brand-lockup{display:flex;align-items:center;gap:var(--gap)}.mascot{width:var(--mascot);height:var(--mascot)}
+.metric{position:relative;padding-left:calc(var(--panel-pad) + var(--mascot))}
+.metric>.icon{position:absolute;left:var(--panel-pad);top:var(--panel-pad);width:var(--mascot);height:var(--mascot);padding:var(--gap);border-radius:var(--radius);background:var(--soft)}
+#timezone{background:var(--soft);padding:4px var(--gap);border-radius:var(--pill);font-size:11px}
+th small{display:block;color:var(--muted);font-weight:400;font-size:10px}
+button:hover:not(:disabled){box-shadow:inset 0 0 0 1px var(--accent)}button:active:not(:disabled){transform:translateY(1px)}
+dl{white-space:normal;min-width:220px;overflow-wrap:anywhere;margin:12px 0}dt{color:var(--muted);font-size:11px;margin-top:8px}dd{margin:0;font-size:12px}#empty{padding:64px 24px;text-align:center}
 .pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px var(--panel-pad)}.pagination div{display:flex;gap:8px}footer{padding:var(--gap) 0;color:var(--muted);font-size:12px}
 @media(min-width:1200px){.filters{grid-template-columns:repeat(6,minmax(0,1fr))}.filter-actions{grid-column:span 2}.filter-note{grid-column:span 4;align-self:center}#dashboard>.filter-note{margin-top:4px}}
 @media(pointer:coarse){:root{--control:44px}}
 @media(max-width:850px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.topline{align-items:start}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(4){border-top:1px solid var(--line)}}
-@media(max-width:500px){main{padding:var(--gap) var(--panel-pad)}header{padding:var(--gap) var(--panel-pad)}.brand{font-size:14px}.topline{display:block}h1{font-size:var(--heading)}.filters{grid-template-columns:1fr}.metric{padding:8px var(--panel-pad)}.metric strong{font-size:var(--metric)}.report-head{align-items:start;flex-direction:column}#login-panel{margin:24px auto;padding:24px}.pagination{flex-wrap:wrap}.filter-actions button{flex:1}}
+@media(max-width:500px){main{padding:var(--gap) var(--panel-pad)}header{padding:var(--gap) var(--panel-pad)}.brand{font-size:14px}.topline{display:block}h1{font-size:var(--heading)}.filters{grid-template-columns:1fr}.metric{padding:8px var(--panel-pad);padding-left:calc(var(--panel-pad) + var(--mascot))}.metric strong{font-size:var(--metric)}.report-head{align-items:start;flex-direction:column}#login-panel{margin:24px auto;padding:24px}.pagination{flex-wrap:wrap}.filter-actions button{flex:1}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<header><div><div class="brand" data-copy="brand"></div><div class="byline" data-copy="byline"></div></div><button id="logout" class="secondary" data-copy="logout" hidden></button></header>
+<header><div class="brand-lockup"><img class="mascot" data-icon="hound" alt=""><div><div class="brand" data-copy="brand"></div><div class="byline" data-copy="byline"></div></div></div><button id="logout" class="secondary" data-copy="logout" hidden></button></header>
 <main>
 <section id="login-panel" aria-labelledby="login-title">
   <p class="eyebrow" data-copy="workspace"></p><h1 id="login-title" data-copy="loginTitle"></h1><p data-copy="loginHint"></p>
@@ -61,10 +74,10 @@ details{max-width:380px}summary{cursor:pointer;color:var(--accent);padding:0 4px
  </form>
  <p class="filter-note" data-copy="summaryNote"></p>
  <div class="metrics" id="metrics">
-  <div class="metric"><span data-copy="claims"></span><strong id="metric-claims">—</strong></div>
-  <div class="metric"><span data-copy="points"></span><strong id="metric-points">—</strong></div>
-  <div class="metric"><span data-copy="scans"></span><strong id="metric-scans">—</strong></div>
-  <div class="metric"><span data-copy="duplicates"></span><strong id="metric-duplicates">—</strong></div>
+  <div class="metric"><img class="icon" data-icon="receipt" alt=""><span data-copy="claims"></span><strong id="metric-claims">—</strong></div>
+  <div class="metric"><img class="icon" data-icon="beans" alt=""><span data-copy="points"></span><strong id="metric-points">—</strong></div>
+  <div class="metric"><img class="icon" data-icon="scan" alt=""><span data-copy="scans"></span><strong id="metric-scans">—</strong></div>
+  <div class="metric"><img class="icon" data-icon="repeat" alt=""><span data-copy="duplicates"></span><strong id="metric-duplicates">—</strong></div>
  </div>
  <section class="report" aria-labelledby="table-title">
   <div class="report-head"><div><h2 id="table-title"></h2><p id="count"></p></div><div class="export-actions"><button id="export-excel" data-copy="exportExcel"></button><button id="export-all" class="secondary" data-copy="exportAll"></button><button id="export" class="secondary" data-copy="export"></button></div></div>
@@ -76,6 +89,8 @@ details{max-width:380px}summary{cursor:pointer;color:var(--accent);padding:0 4px
 </main>
 <script id="app-config">
 const CONFIG = {
+ icons:{hound:'icons/hound.svg',receipt:'icons/receipt.svg',beans:'icons/beans.svg',scan:'icons/scan.svg',repeat:'icons/repeat.svg',download:'icons/download.svg'},
+ cellPreviewChars:60,
  API_URL:'https://beanhoundscan.mobile1234.site', prefix:'/api/admin', fontUrl:'https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=optional',
  locale:'th-TH', timezone:'Asia/Bangkok', offset:'+07:00', timeoutMs:30000, searchDelayMs:300, dateStep:1,
  unauthorizedStatus:401, filenamePrefix:'beanhound-',exportAllPath:'/export.xlsx',allReportsFilename:'all-reports', numberOptions:{maximumFractionDigits:2},
@@ -87,7 +102,7 @@ const CONFIG = {
  numeric:['id','points','amount','amount_net','amount_gross','amount_used','duplicate_scan_count','min_amount','reward_max','max_points_per_bill','claim_window_min'],
  timestamps:['reward_clicked_at','created_at','updated_at','first_duplicate_at','last_duplicate_at','effective_from','effective_to'],
  statuses:{ok:'สแกนผ่าน / กลับมารับแต้ม',duplicate:'ใบเสร็จซ้ำ',bill_mismatch:'เลขบิลไม่ตรง',reprint:'ใบพิมพ์ซ้ำ',expired:'เกินเวลา',shop_closed:'สาขาปิดใช้งาน',unreadable:'อ่านไม่ได้',below_min:'ยอดไม่ถึง',no_link:'ไม่มีลิงก์รับแต้ม',rate_limited:'เกินจำนวนครั้ง',error:'ข้อผิดพลาด'},
- messages:{brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'LOYALTY / ADMIN',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'เลือกช่วงเวลา ดูรายการ และดาวน์โหลดข้อมูล',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',apply:'แสดงรายงาน',today:'วันนี้',claims:'ใบเสร็จผ่านการตรวจ',points:'แต้มที่คำนวณได้',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',export:'Export CSV',exportExcel:'Export Excel รายงานนี้',exportAll:'Export Excel ทุกรายงาน',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'สถานะ 1 หมายถึงกดเปิด LINE ไม่ใช่ยืนยันแต้มเข้า • รายการเดิมไม่มีเวลากดรับ • CSV รวมทุกคอลัมน์',all:'ทั้งหมด',detail:'รายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์รายงาน…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'เลือกวันเวลาเริ่มต้นและสิ้นสุดให้ถูกต้อง',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'กรองตามเวลาที่บันทึก ตั้งแต่เวลาเริ่มต้นถึงเวลาสิ้นสุด รวมเวลาที่ระบุ',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'แสดงทุกคอลัมน์จาก DB • เลื่อนแนวนอนเพื่อดูเพิ่มเติม • Export รวมทุกแถวตามตัวกรอง',dash:'—'}
+ messages:{brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'LOYALTY / ADMIN',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'เลือกช่วงเวลา ดูรายการ และดาวน์โหลดข้อมูล',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',apply:'แสดงรายงาน',today:'วันนี้',claims:'ใบเสร็จผ่านการตรวจ',points:'แต้มที่คำนวณได้',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',export:'Export CSV',exportExcel:'Export Excel รายงานนี้',exportAll:'Export Excel ทุกรายงาน',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'สถานะ 1 หมายถึงกดเปิด LINE ไม่ใช่ยืนยันแต้มเข้า • รายการเดิมไม่มีเวลากดรับ • CSV รวมทุกคอลัมน์',all:'ทั้งหมด',detail:'ดูรายละเอียด',collapse:'ย่อรายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์รายงาน…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'เลือกวันเวลาเริ่มต้นและสิ้นสุดให้ถูกต้อง',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'กรองตามเวลาที่บันทึก ตั้งแต่เวลาเริ่มต้นถึงเวลาสิ้นสุด รวมเวลาที่ระบุ',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'เลื่อนซ้าย–ขวาเพื่อดูทุกคอลัมน์ • กดดูรายละเอียดสำหรับข้อมูลยาว • Export ได้ครบตามตัวกรอง',ellipsis:'…',dash:'—'}
 };
 </script>
 <script id="app-main">
@@ -124,8 +139,9 @@ function render(data){
  state.page=data.page;state.pages=data.pages;$('table-title').textContent=CONFIG.datasets[$('kind').value];$('count').textContent=copy('records',{count:number.format(data.total)});
  $('page-info').textContent=copy('page',{page:number.format(data.page),pages:number.format(data.pages)});$('thead').replaceChildren();$('tbody').replaceChildren();$('empty').hidden=data.total!==0;
  const columns=data.columns;const head=document.createElement('tr');
- for(const key of columns){const th=document.createElement('th');th.scope='col';th.textContent=CONFIG.columns[key]?CONFIG.columns[key]+' ('+key+')':key;head.append(th);}$('thead').append(head);
- for(const row of data.rows){const tr=document.createElement('tr');for(const key of columns){const td=document.createElement('td');td.textContent=fieldValue(key,row[key]);if(CONFIG.numeric.includes(key))td.className='number';tr.append(td);}$('tbody').append(tr);}
+ for(const key of columns){const th=document.createElement('th');th.scope='col';th.textContent=CONFIG.columns[key]||key;if(CONFIG.columns[key]){const raw=document.createElement('small');raw.textContent=key;th.append(raw);}head.append(th);}$('thead').append(head);
+ for(const row of data.rows){const tr=document.createElement('tr');for(const key of columns){const td=document.createElement('td');const value=fieldValue(key,row[key]);const content=document.createElement('div');content.className='cell-value';content.textContent=value;
+if(value.length>CONFIG.cellPreviewChars||value.includes('\n')){const detail=document.createElement('details'),summary=document.createElement('summary');detail.className='cell-detail';summary.textContent=copy('detail');const preview=document.createElement('div');preview.className='cell-value';preview.textContent=value.slice(0,CONFIG.cellPreviewChars)+copy('ellipsis');td.append(preview);detail.append(summary,content);detail.addEventListener('toggle',()=>{preview.hidden=detail.open;summary.textContent=copy(detail.open?'collapse':'detail');});td.append(detail);}else{content.classList.add('cell-short');td.append(content);}if(CONFIG.numeric.includes(key))td.className='number';tr.append(td);}$('tbody').append(tr);}
 
 }
 function datasetControls(){const dated=CONFIG.dated.includes($('kind').value);for(const id of ['start','end','shop','bill','today'])$(id).disabled=!dated;$('result').disabled=$('kind').value!=='attempts';$('filter-note').textContent=copy(dated?'rangeNote':'configNote');}
@@ -152,6 +168,8 @@ document.getElementById('export').addEventListener('click',()=>exportReport('csv
 document.getElementById('export-excel').addEventListener('click',()=>exportReport('xlsx'));
 document.getElementById('export-all').addEventListener('click',()=>exportReport('xlsx',true));
 document.querySelectorAll('[data-copy]').forEach(el=>el.textContent=copy(el.dataset.copy));$('kind').replaceChildren(...Object.entries(CONFIG.datasets).map(([key,label])=>option(key,label)));$('caption').textContent=copy('caption');$('metrics').setAttribute('aria-label',copy('summaryNote'));for(const id of ['start','end'])$(id).step=CONFIG.dateStep;
+document.querySelectorAll('[data-icon]').forEach(el=>el.src=CONFIG.icons[el.dataset.icon]);
+for(const id of ['export-excel','export-all','export']){const icon=document.createElement('img');icon.className='icon';icon.alt='';icon.src=CONFIG.icons.download;$(id).prepend(icon);}
 const font=document.createElement('link');font.rel='stylesheet';font.href=CONFIG.fontUrl;document.head.append(font);
 </script>
 </body>
