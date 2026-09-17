@@ -239,7 +239,8 @@ const CONFIG = {
  cellPreviewChars:60, sortDirections:{asc:'ascending',desc:'descending'},sortIcons:{none:'sortAsc',asc:'sortAsc',desc:'sortDesc'},
  API_URL:'https://beanhoundscan.mobile1234.site', prefix:'/api/admin', fontUrl:'fonts/prompt.css',
  locale:'th-TH', timezone:'Asia/Bangkok', offset:'+07:00', timeoutMs:30000, searchDelayMs:300, dateStep:1,
- unauthorizedStatus:401, filenamePrefix:'beanhound-',exportAllPath:'/export.xlsx',exportSummaryPath:'/export-summary',exportFormat:'xlsx',summaryFilenameSuffix:'-summary',allReportsFilename:'all-reports', numberOptions:{maximumFractionDigits:2},
+ unauthorizedStatus:401, exportAllPath:'/export.xlsx',exportSummaryPath:'/export-summary',exportFormat:'xlsx', numberOptions:{maximumFractionDigits:2},
+ exportFilename:{prefix:'Stamp-card-',datePattern:/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2})?$/,dateReplacement:'$3$2$1$4$5'},
  dateOptions:{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Bangkok'},
  datasets:{claims:'รายการรับแต้ม',attempts:'ประวัติการสแกน',duplicates:'จำนวนสแกนซ้ำรายใบ',shops:'ข้อมูลสาขา',rules:'กติกาแต้ม',tiers:'ขั้นอัตราแต้ม',links:'ลิงก์ LINE'},
  dated:['claims','attempts','duplicates'],
@@ -385,10 +386,10 @@ async function exportReport(event){
  const detail=$('export-detail').checked,format=CONFIG.exportFormat;let complete=false;
  busy(true);$('export-dialog').setAttribute('aria-busy','true');exportMessage(copy('exporting'));status(copy('exporting'));
  try{
-  const name=detail?CONFIG.allReportsFilename:state.appliedFilters.sort_report+CONFIG.summaryFilenameSuffix;
+  const filename=CONFIG.exportFilename.prefix+[state.appliedFilters.start,state.appliedFilters.end].map(value=>value.replace(CONFIG.exportFilename.datePattern,CONFIG.exportFilename.dateReplacement)).join('')+'.'+format;
   const response=detail?await api(CONFIG.exportAllPath+'?'+params({format},true)):await api(CONFIG.exportSummaryPath,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(summaryPayload())});
   const blob=await response.blob();if(!state.token)return;
-  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=CONFIG.filenamePrefix+name+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),CONFIG.timeoutMs);
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),CONFIG.timeoutMs);
   complete=true;status(copy('saved'));
  }catch(error){if(state.token){exportMessage(error.message,true);status(error.message,true);}}
  finally{busy(false);datasetControls();$('export-dialog').setAttribute('aria-busy','false');if(complete){$('export-dialog').close();}else if(state.token&&$('export-dialog').open){$('export-confirm').focus();}}
