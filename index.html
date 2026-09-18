@@ -2,7 +2,16 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#151518" media="(prefers-color-scheme:dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23111113'/%3E%3Cpath d='M6 6h5v5H6zM13 6h5v5h-5zM6 13h5v5H6zM13 13h2v2h3v3h-5z' fill='%23fff'/%3E%3C/svg%3E">
 <title>BEANHOUND</title>
 <style>
 :root{
@@ -10,23 +19,28 @@
   --text:#111113;--text-2:#6b6b70;--text-3:#6b6b70;
   --line:#e4e4e7;--line-2:#d4d4d8;
   --ok:#0f7a4d;--ok-bg:#e8f5ee;--bad:#b4231f;--bad-bg:#fdeceb;
+  --line-green:#06C755;--line-ink:#04361a;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);
 }
 @media(prefers-color-scheme:dark){:root{
   --bg:#0c0c0e;--surface:#151518;--surface-2:#1c1c20;
   --text:#f4f4f5;--text-2:#a1a1aa;--text-3:#a1a1aa;
   --line:#27272b;--line-2:#3a3a40;
   --ok:#4ade80;--ok-bg:#0e2a1c;--bad:#f87171;--bad-bg:#2c1413;
+  --line-green:#3ee27f;--line-ink:#04240f;
 }}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Prompt',-apple-system,sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;display:flex;justify-content:center}
+  min-height:100vh;min-height:100dvh;display:flex;justify-content:center}
 .svgic{width:1em;height:1em;fill:currentColor;display:inline-block;vertical-align:-.14em;flex-shrink:0}
-.app{width:100%;max-width:430px;min-height:100vh;background:var(--surface);
+.app{width:100%;max-width:430px;min-height:100vh;min-height:100dvh;background:var(--surface);
   display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.07)}
-.top{border-bottom:1px solid var(--line);padding:16px 20px}
+.top{border-bottom:1px solid var(--line);
+  padding:calc(16px + var(--safe-top)) calc(20px + var(--safe-right)) 16px calc(20px + var(--safe-left))}
 .top b{font-size:13px;font-weight:700;letter-spacing:.16em;display:block}
 .top span{font-size:9px;letter-spacing:.1em;color:var(--text-3);margin-top:3px;display:block}
-main{flex:1;padding:24px 20px 40px}
+main{flex:1;padding:24px calc(20px + var(--safe-right)) calc(40px + var(--safe-bottom)) calc(20px + var(--safe-left))}
 .scr{display:none}.scr.on{display:block;animation:in .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 h1{font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1.35;text-align:center}
@@ -47,7 +61,20 @@ h2{font-size:17px;font-weight:600;letter-spacing:-.01em}
 .btn:active{transform:scale(.96)}
 .btn.p{background:var(--text);color:var(--surface)}
 .btn.s{background:transparent;color:var(--text-2);border:1.5px solid var(--line-2)}
-.btn.g{background:#06C755;color:#082d19;font-size:16px;font-weight:600;padding:18px 20px}
+.btn.g{background:var(--line-green);color:var(--line-ink);font-size:16px;font-weight:600;padding:18px 20px}
+.btn.l{background:transparent;color:var(--text);border:1.5px solid var(--line-green);font-weight:500}
+.receipt{position:relative;background:var(--surface);border:1px solid var(--line-2);border-radius:14px}
+.receipt-rows{padding:3px 18px}
+.receipt-total{padding:16px 18px 18px}
+.perf{position:relative;border-top:2px dashed var(--line);margin:0 22px}
+.perf::before,.perf::after{content:'';position:absolute;top:-11px;width:20px;height:20px;
+  border-radius:50%;background:var(--surface);border:1px solid var(--line-2)}
+.perf::before{left:-32px}.perf::after{right:-32px}
+.linked{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;
+  font-size:12.5px;color:var(--text-2)}
+.linked img{width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--surface-2)}
+noscript .nojs{display:block;margin:24px 0;padding:16px 18px;border:1px solid var(--line-2);
+  border-radius:14px;background:var(--surface-2);font-size:13.5px;line-height:1.8;text-align:center}
 .link{display:block;width:100%;background:none;border:none;font-family:inherit;font-size:12.5px;
   color:var(--text-3);text-align:center;padding:14px 0;cursor:pointer;text-decoration:underline;
   text-underline-offset:3px}
@@ -103,6 +130,7 @@ h1:focus{outline:none}
 <div class="app">
   <header class="top"><b data-copy="brand"></b><span data-copy="byline"></span></header>
   <main>
+    <noscript><p class="nojs">กรุณาเปิด JavaScript เพื่อสแกนใบเสร็จ</p></noscript>
     <section id="home" aria-labelledby="home-title">
       <div class="hero">
         <div class="heroic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2 2h7v7H2zM15 2h7v7h-7zM2 15h7v7H2zM15 15h3v3h4v4h-7z"/></svg></div>
@@ -111,6 +139,8 @@ h1:focus{outline:none}
       </div>
       <button id="start" class="btn p mt" data-copy="start" disabled></button>
       <p class="sub" data-copy="homeNote"></p>
+      <button id="line-connect" class="btn l mt-s" type="button" data-copy="lineConnect" hidden></button>
+      <p id="line-connect-note" class="sub" data-copy="lineConnectNote" hidden></p>
     </section>
     <section id="camera" hidden aria-labelledby="camera-title">
       <h1 id="camera-title" tabindex="-1" data-copy="cameraTitle"></h1>
@@ -121,17 +151,21 @@ h1:focus{outline:none}
     </section>
     <section id="result" hidden aria-labelledby="result-title">
       <div class="result-tag"><span class="tag ok" data-copy="resultTag"></span><h1 id="result-title" tabindex="-1" data-copy="resultTitle"></h1></div>
-      <dl class="card">
-        <div class="row"><dt class="k" data-copy="bill"></dt><dd class="v" id="bill-value"></dd></div>
-        <div class="row"><dt class="k" data-copy="shop"></dt><dd class="v" id="shop-value"></dd></div>
-        <div class="row"><dt class="k" data-copy="date"></dt><dd class="v" id="date-value"></dd></div>
-        <div class="row"><dt class="k" data-copy="amount"></dt><dd class="v" id="amount-value"></dd></div>
-      </dl>
-      <div class="card mark mt-s">
-        <span class="lbl points-label" data-copy="pointsLabel"></span>
-        <div class="ptn" id="points"></div><div class="ptl" data-copy="points"></div>
-        <p id="capped" class="note ok result-note" data-copy="capped" hidden></p>
+      <div class="receipt">
+        <dl class="receipt-rows">
+          <div class="row"><dt class="k" data-copy="bill"></dt><dd class="v" id="bill-value"></dd></div>
+          <div class="row"><dt class="k" data-copy="shop"></dt><dd class="v" id="shop-value"></dd></div>
+          <div class="row"><dt class="k" data-copy="date"></dt><dd class="v" id="date-value"></dd></div>
+          <div class="row"><dt class="k" data-copy="amount"></dt><dd class="v" id="amount-value"></dd></div>
+        </dl>
+        <div class="perf" aria-hidden="true"></div>
+        <div class="receipt-total">
+          <span class="lbl points-label" data-copy="pointsLabel"></span>
+          <div class="ptn" id="points"></div><div class="ptl" data-copy="points"></div>
+          <p id="capped" class="note ok result-note" data-copy="capped" hidden></p>
+        </div>
       </div>
+      <p id="linked" class="linked" hidden><img id="linked-avatar" alt=""><span id="linked-name"></span></p>
       <button id="line-link" class="btn g mt" type="button" data-copy="line"></button>
       <p class="sub" data-copy="lineNote"></p>
       <button class="btn s mt-s" data-home data-copy="scanAgain"></button>
@@ -188,6 +222,10 @@ h1:focus{outline:none}
     bytesPerMB: 1048576,
     qrGroups: {brand: 1, shop: 2, bill_no: 3, amount: 4, bill_date: 5},
     dateSuffix: 'T12:00:00+07:00',
+    // LINE Login runs through LIFF, so the SDK is a declared, server-gated dependency.
+    // Nothing is fetched while the API reports line_login_enabled=false.
+    line: {sdkUrl: 'https://static.line-scdn.net/liff/edge/2/sdk.js', sdkTimeoutMs: 15000,
+           tokenField: 'line_id_token', pictureProtocol: 'https:'},
     messages: {
       title: 'รับแต้มจากใบเสร็จ | BEANHOUND',
       brand: 'BEANHOUND', byline: 'by Greyhound Café',
@@ -203,12 +241,18 @@ h1:focus{outline:none}
       duplicateTitle: 'ใบเสร็จซ้ำ',
       duplicateBody: 'ใบเสร็จนี้ถูกบันทึกว่าใช้สิทธิ์แล้ว หากยังไม่ได้รับแต้ม กรุณาติดต่อพนักงานหรือแอดมิน',
       adminContact: 'ติดต่อแอดมิน',
-      errorTitle: 'ERROR WARRING',
-      errorBody: 'เกิดข้อผิดพลาด QR Code นี้ไม่สามารถรับใบเสร็จได้ กรุณาลองใหม่ หรือติดต่อ พนักงานหน้าร้าน หากไม่สะดวกสามารถติดต่อพนักงานแอดมิน',
+      errorTitle: 'รับแต้มไม่สำเร็จ',
+      errorBody: 'ยังรับแต้มจาก QR Code นี้ไม่ได้ กรุณาลองใหม่อีกครั้ง หากยังไม่สำเร็จ กรุณาติดต่อพนักงานหน้าร้าน หรือติดต่อแอดมิน',
       belowMinTitle: 'ยอดไม่ถึงขั้นต่ำ',
       belowMinBody: 'ยอดที่ใช้คำนวณแต้ม {amount} บาท ต้องมียอดขั้นต่ำ {minimum} บาท จึงจะรับแต้มได้',
       receiving: 'กำลังบันทึกการกดรับแต้ม…',
       receiveError: 'ยังเปิดหน้ารับแต้มไม่ได้ กรุณากดปุ่มรับแต้มอีกครั้ง',
+      lineConnect: 'เชื่อมบัญชี LINE',
+      lineConnectNote: 'เชื่อมบัญชีเพื่อให้แต้มผูกกับ LINE ของคุณ ไม่เชื่อมก็สแกนรับแต้มได้ตามปกติ',
+      lineConnecting: 'กำลังเชื่อมบัญชี LINE…',
+      lineConnectError: 'เชื่อมบัญชี LINE ไม่สำเร็จ สแกนรับแต้มต่อได้ตามปกติ',
+      linkedAs: 'เชื่อมกับบัญชี {name} แล้ว',
+      linkedUnnamed: 'เชื่อมบัญชี LINE แล้ว',
       retry: 'ลองอีกครั้ง', ready: '', initializing: 'กำลังเตรียมการสแกน…',
       openingCamera: 'กำลังเปิดกล้อง…', cameraFallback: 'ใช้การถ่ายรูปใบเสร็จแทนได้จากปุ่มด้านล่าง',
       decoding: 'กำลังอ่านใบเสร็จ…', submitting: 'กำลังตรวจสอบใบเสร็จ…',
@@ -1177,7 +1221,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
 <script id="app-main">
   'use strict';
   const $ = id => document.getElementById(id);
-  const state = {stream: null, timer: null, busy: false, generation: 0, ready: false, detector: null, controller: null, pending: null};
+  const state = {stream: null, timer: null, busy: false, generation: 0, ready: false, detector: null, controller: null, pending: null, liff: false};
   const base = $('base'), work = $('work');
   const baseContext = base.getContext('2d', {willReadFrequently: true});
   const workContext = work.getContext('2d', {willReadFrequently: true});
@@ -1227,6 +1271,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     state.pending = null;
     base.width = base.height = work.width = work.height = 1;
     setBusy(false);
+    showIdentity();
     showScreen('home');
     if (!state.ready) initialize();
   }
@@ -1265,7 +1310,66 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       }
       state.ready = true;
       setBusy(false);
+      // Scanning must not wait for the LINE SDK, so identity attaches on its own.
+      startLine(remote);
     } catch { state.ready = false; showError(); }
+  }
+  function loadScript(url) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const fail = () => { clearTimeout(timer); script.remove(); reject(new Error('sdk')); };
+      const timer = setTimeout(fail, CONFIG.line.sdkTimeoutMs);
+      script.onload = () => { clearTimeout(timer); resolve(); };
+      script.onerror = fail;
+      script.referrerPolicy = 'no-referrer';
+      script.src = url;
+      document.head.append(script);
+    });
+  }
+  function linkedProfile() {
+    // Only what LIFF already decoded for display; the server re-verifies the token.
+    if (!state.liff || !liff.isLoggedIn()) return null;
+    try { return liff.getDecodedIDToken(); } catch { return null; }
+  }
+  function showIdentity() {
+    const profile = linkedProfile();
+    $('line-connect').hidden = Boolean(profile);
+    $('line-connect-note').hidden = Boolean(profile);
+    $('linked').hidden = !profile;
+    if (!profile) return;
+    $('linked-name').textContent = profile.name
+      ? CONFIG.messages.linkedAs.replace('{name}', profile.name) : CONFIG.messages.linkedUnnamed;
+    $('linked-avatar').hidden = true;
+    if (profile.picture) {
+      try {
+        const picture = new URL(profile.picture);
+        if (picture.protocol === CONFIG.line.pictureProtocol) {
+          $('linked-avatar').referrerPolicy = 'no-referrer';
+          $('linked-avatar').onerror = () => { $('linked-avatar').hidden = true; };
+          $('linked-avatar').src = picture.href;
+          $('linked-avatar').hidden = false;
+        }
+      } catch { /* A malformed portrait never blocks the linked-account notice. */ }
+    }
+  }
+  async function startLine(remote) {
+    if (!remote.line_login_enabled || !remote.line_liff_id) return;
+    try {
+      await loadScript(CONFIG.line.sdkUrl);
+      await liff.init({liffId: remote.line_liff_id});
+      state.liff = true;
+    } catch { state.liff = false; }
+    showIdentity();
+  }
+  function connectLine() {
+    if (state.busy) return;
+    if (!state.liff) { setStatus('lineConnectError'); return; }
+    setStatus('lineConnecting');
+    try { liff.login(); } catch { setStatus('lineConnectError'); }
+  }
+  function identityToken() {
+    if (!state.liff || !liff.isLoggedIn()) return null;
+    try { return liff.getIDToken(); } catch { return null; }
   }
   function parseQR(text) {
     const match = CONFIG.etaxPattern.exec(text);
@@ -1387,6 +1491,8 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     const form = new FormData();
     for (const [key, value] of Object.entries(parsed)) form.append(key, value);
     form.append('image', blob, CONFIG.uploadFilename);
+    const token = identityToken();
+    if (token) form.append(CONFIG.line.tokenField, token);
     const result = await timedFetch(CONFIG.API_URL + CONFIG.endpoints.claim, {method: 'POST', body: form});
     const body = await result.json();
     if (generation !== state.generation) return;
@@ -1404,6 +1510,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     $('date-value').textContent = dateFormat.format(new Date(body.date + CONFIG.dateSuffix));
     $('amount-value').textContent = moneyFormat.format(body.amount);
     $('capped').hidden = !body.capped;
+    showIdentity();
     setBusy(false);
     showScreen('result');
   }
@@ -1471,6 +1578,7 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
   $('file').accept = CONFIG.imageAccept;
   const font = document.createElement('link'); font.rel = 'stylesheet'; font.href = CONFIG.fontUrl; document.head.append(font);
   $('start').addEventListener('click', openCamera);
+  $('line-connect').addEventListener('click', connectLine);
   $('photo').addEventListener('click', () => $('file').click());
   $('file').addEventListener('change', handlePhoto);
   $('retry').addEventListener('click', reset);
