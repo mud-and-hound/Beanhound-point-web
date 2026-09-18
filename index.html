@@ -167,7 +167,8 @@ h1:focus{outline:none}
       </div>
       <p id="linked" class="linked" hidden><img id="linked-avatar" alt=""><span id="linked-name"></span></p>
       <button id="line-link" class="btn g mt" type="button" data-copy="line"></button>
-      <p class="sub" data-copy="lineNote"></p>
+      <p id="line-note" class="sub" data-copy="lineNote"></p>
+      <p id="received" class="note ok result-note" data-copy="receivedNote" hidden></p>
       <button class="btn s mt-s" data-home data-copy="scanAgain"></button>
     </section>
     <section id="error" hidden aria-labelledby="error-title">
@@ -247,6 +248,10 @@ h1:focus{outline:none}
       belowMinBody: 'ยอดที่ใช้คำนวณแต้ม {amount} บาท ต้องมียอดขั้นต่ำ {minimum} บาท จึงจะรับแต้มได้',
       receiving: 'กำลังบันทึกการกดรับแต้ม…',
       receiveError: 'ยังเปิดหน้ารับแต้มไม่ได้ กรุณากดปุ่มรับแต้มอีกครั้ง',
+      received: 'เปิดหน้ารับแต้ม LINE แล้ว',
+      receivedNote: 'ใบเสร็จนี้ใช้สิทธิ์รับแต้มแล้ว หน้ารับแต้ม LINE เปิดได้ครั้งเดียวต่อใบเสร็จ',
+      alreadyReceivedTitle: 'กดรับแต้มไปแล้ว',
+      alreadyReceivedBody: 'ใบเสร็จนี้เปิดหน้ารับแต้ม LINE ไปแล้ว จึงเปิดซ้ำไม่ได้ หากยังไม่ได้รับแต้ม กรุณาติดต่อพนักงานหน้าร้านหรือแอดมิน',
       lineConnect: 'เชื่อมบัญชี LINE',
       lineConnectNote: 'เชื่อมบัญชีเพื่อให้แต้มผูกกับ LINE ของคุณ ไม่เชื่อมก็สแกนรับแต้มได้ตามปกติ',
       lineConnecting: 'กำลังเชื่อมบัญชี LINE…',
@@ -1250,9 +1255,9 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     document.title = CONFIG.messages.title;
   }
   function showError(reason, details = {}) {
-    const duplicate = reason === 'duplicate';
-    $('error-title').textContent = CONFIG.messages[duplicate ? 'duplicateTitle' : 'errorTitle'];
-    document.querySelector('#error .copy').textContent = CONFIG.messages[duplicate ? 'duplicateBody' : 'errorBody'];
+    const kind = reason === 'already_received' ? 'alreadyReceived' : reason === 'duplicate' ? 'duplicate' : 'error';
+    $('error-title').textContent = CONFIG.messages[kind + 'Title'];
+    document.querySelector('#error .copy').textContent = CONFIG.messages[kind + 'Body'];
     if (reason === 'below_min' && Number.isFinite(details.amount) && Number.isFinite(details.minimum_amount)) {
       $('error-title').textContent = CONFIG.messages.belowMinTitle;
       document.querySelector('#error .copy').textContent = CONFIG.messages.belowMinBody
@@ -1510,9 +1515,15 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
     $('date-value').textContent = dateFormat.format(new Date(body.date + CONFIG.dateSuffix));
     $('amount-value').textContent = moneyFormat.format(body.amount);
     $('capped').hidden = !body.capped;
+    setReceived(false);
     showIdentity();
     setBusy(false);
     showScreen('result');
+  }
+  function setReceived(done) {
+    $('line-link').hidden = done;
+    $('line-note').hidden = done;
+    $('received').hidden = !done;
   }
   async function receiveReward() {
     if (state.busy || !state.pending) return;
@@ -1521,11 +1532,18 @@ y:w.alignmentPattern.y},bottomLeft:{x:f.x,y:f.y},dimension:w.dimension,topLeft:{
       const result = await timedFetch(CONFIG.API_URL + CONFIG.endpoints.receive.replace('{id}', state.pending.id),
         {method: 'POST', headers: {Authorization: 'Bearer ' + state.pending.token}});
       const body = await result.json();
+      if (body.reason === 'already_received') { showError(body.reason); return; }
       if (!result.ok || !body.ok) throw new Error('receive');
       const url = new URL(body.line_url);
       if (url.protocol !== 'https:') throw new Error('link');
-      window.location.assign(url.href);
-      setBusy(false);
+      // The server issues this link once per receipt. Drop the claim and its button
+      // before leaving, so returning to this page from LINE, the back button or a
+      // restored tab never offers it again. replace() also keeps this page out of
+      // history, so back-then-forward cannot reopen the reward link from here.
+      state.pending = null;
+      setReceived(true);
+      setBusy(false, 'received');
+      window.location.replace(url.href);
     } catch {
       setBusy(false, 'receiveError');
     }
