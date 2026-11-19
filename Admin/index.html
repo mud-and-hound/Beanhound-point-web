@@ -65,7 +65,7 @@ p{margin:0;color:var(--muted)}
 .metrics{display:grid;grid-template-columns:repeat(var(--metric-columns),minmax(0,1fr));grid-auto-rows:1fr;max-width:calc(var(--metric-width) * var(--metric-columns) + var(--gap) * (var(--metric-columns) - 1));gap:var(--gap);margin:0 0 var(--summary-gap)}
 .metric{min-width:0;min-height:var(--metric-height);padding:var(--metric-pad);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;align-content:center;column-gap:var(--gap);row-gap:var(--metric-value-gap)}
 .metric>.icon{grid-column:2;grid-row:1/3;width:var(--metric-icon);height:var(--metric-icon);color:var(--accent)}
-.metric span[data-copy]{min-width:0;overflow-wrap:anywhere;color:var(--muted);font-size:var(--small)}
+.metric span[data-copy],.metric span.metric-label{min-width:0;overflow-wrap:anywhere;color:var(--muted);font-size:var(--small)}
 .metric strong{display:block;min-width:0;overflow-wrap:anywhere;grid-column:1;font:500 var(--metric)/1.25 var(--font);font-variant-numeric:tabular-nums}
 .summary-note{font-size:var(--small);margin:0 0 var(--panel-pad)}
 .filters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--gap);padding:var(--panel-pad);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:var(--panel-pad)}
@@ -170,10 +170,131 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
 #export-error{min-height:var(--export-message-height);font-size:var(--small)}
 #export-error[data-error=true]{color:var(--danger)}
 [aria-invalid=true]{outline:var(--focus) solid var(--danger);outline-offset:0}
+
+/* ── Workspace switch, header actions ── */
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.header-actions button{white-space:nowrap}
+header{flex-wrap:wrap;row-gap:8px}
+.views{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 var(--panel-pad);padding:4px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);width:max-content;max-width:100%}
+.view-tab{background:transparent;color:var(--muted);border-color:transparent}
+.view-tab:hover:not(:disabled){background:var(--soft);border-color:var(--line);color:var(--ink)}
+.view-tab[aria-current=page],.view-tab[aria-current=page]:hover:not(:disabled){background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+/* ── CRM ── */
+:root{--chart:#9a5a26;--chart-soft:#f2e6da;--chart-grid:#e6e7df;--good:#0ca30c;--good-ink:#006300;--warn:#fab219;--bad:#d03b3b;--chart-height:220px;--bar-thick:10px}
+.crm-upload{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:var(--gap);margin-bottom:var(--panel-pad)}
+.drop{display:grid;place-items:center;text-align:center;gap:6px;padding:var(--space) var(--panel-pad);background:var(--paper);border:1px dashed var(--muted);border-radius:var(--radius);cursor:pointer;transition:background var(--motion),border-color var(--motion)}
+.drop:hover,.drop.dragover{background:var(--accent-soft);border-color:var(--accent)}
+.drop>.icon{width:32px;height:32px;color:var(--accent)}
+.drop strong{font-size:var(--subheading);font-weight:500}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:var(--panel-pad);min-width:0}
+.panel h2{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.panel h2 .icon{color:var(--accent)}
+.panel-note{font-size:var(--small);margin-bottom:var(--gap)}
+.upload-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:220px;overflow:auto}
+.upload-list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:var(--control-radius);background:var(--table-stripe)}
+.upload-list .name{overflow-wrap:anywhere;font-weight:500}
+.upload-list small{display:block;color:var(--muted);font-size:var(--small)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--pill);font-size:var(--small);background:var(--soft);color:var(--ink);white-space:nowrap}
+.badge.journal{background:var(--accent-soft);color:var(--accent)}
+.badge.line{background:#e6f7ec;color:#006300}
+.crm-filters{display:flex;flex-wrap:wrap;gap:var(--gap);align-items:end;padding:var(--panel-pad);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:var(--panel-pad)}
+.crm-filters>div{min-width:200px;flex:1}
+.crm-filters p{flex:2;min-width:220px;font-size:var(--small)}
+#crm-results{transition:opacity var(--motion)}
+#crm-results.is-loading{opacity:.55}
+.crm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap);margin-bottom:var(--panel-pad);align-items:start}
+.crm-grid .wide{grid-column:1/-1}
+.insights{list-style:none;margin:0 0 var(--panel-pad);padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--gap)}
+.insights li{display:flex;gap:10px;align-items:flex-start;padding:12px var(--panel-pad);background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--control-radius)}
+.insights li .icon{color:var(--accent);margin-top:2px}
+.insights strong{display:block;font-size:var(--subheading);font-weight:500;color:var(--ink)}
+.insights span{color:var(--muted)}
+.chart{position:relative;min-height:var(--chart-height)}
+.chart svg{display:block;width:100%;height:var(--chart-height);overflow:visible}
+.chart .grid{stroke:var(--chart-grid);stroke-width:1}
+.chart .base{stroke:var(--line);stroke-width:1}
+.chart .bar{fill:var(--chart)}
+.chart .bar.peak{fill:var(--accent)}
+.chart .hit{fill:transparent;cursor:crosshair}
+.chart .bar.on{fill:var(--accent)}
+.chart text{font:var(--small) var(--font);fill:var(--muted);font-variant-numeric:tabular-nums}
+.chart text.peak-label{fill:var(--ink);font-weight:500}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.bars li{display:grid;grid-template-columns:minmax(90px,38%) minmax(0,1fr) auto;gap:4px 10px;align-items:center}
+.bar-label{overflow-wrap:anywhere;color:var(--ink)}
+.bar-track{height:var(--bar-thick);background:transparent;position:relative}
+.bar-fill{position:absolute;inset:0 auto 0 0;width:var(--w);min-width:2px;background:var(--chart);border-radius:0 4px 4px 0}
+.bar-value{font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+.bar-sub{grid-column:1/-1;margin-top:-4px;color:var(--muted);font-size:var(--small)}
+.table-view{margin-top:var(--gap)}
+.table-view summary{cursor:pointer;color:var(--accent);font-size:var(--small);width:max-content}
+.table-view table{margin-top:8px;border-collapse:collapse;width:100%;font-size:var(--small)}
+.table-view td,.table-view th{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left}
+.table-view td:last-child,.table-view th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.empty-state{padding:var(--space);text-align:center;color:var(--muted);background:var(--paper);border:1px dashed var(--line);border-radius:var(--radius)}
+.crm-section{margin-bottom:var(--panel-pad)}
+.crm-section>.report-head{border-bottom:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:var(--panel-pad);border-bottom:1px solid var(--line)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--pill);border:1px solid var(--line);background:var(--paper);font-size:var(--small);white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.chip.good::before{background:var(--good)}.chip.warning::before{background:var(--warn)}.chip.critical::before{background:var(--bad)}.chip.info::before{background:var(--scroll)}
+.chip strong{font-weight:600}
+button.chip{min-height:0;color:var(--ink)}
+button.chip[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.flags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.crm-kpi-sub{display:block;grid-column:1/-1;color:var(--muted);font-size:var(--small)}
+#crm-tip{position:fixed;z-index:20;pointer-events:none;padding:8px 10px;background:var(--ink);color:var(--paper);border-radius:var(--control-radius);font-size:var(--small);max-width:260px;box-shadow:0 6px 18px #0002}
+#crm-tip strong{display:block;font-size:var(--subheading);font-weight:600}
+#crm-error{padding:var(--space);text-align:center}
+/* ── Inbox ── */
+.inbox-list{list-style:none;margin:0;padding:0;display:grid;gap:var(--gap)}
+.fb-card{display:grid;gap:8px;padding:var(--panel-pad);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius)}
+.fb-card[data-status=new]{border-left:3px solid var(--accent)}
+.fb-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.fb-head h2{margin:0;font-size:var(--subheading);font-weight:500;flex:1;min-width:200px}
+.fb-detail{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.fb-meta{font-size:var(--small);color:var(--muted)}
+.fb-status{display:flex;align-items:center;gap:8px}.fb-status select{width:auto}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.thumbs button{padding:0;width:96px;height:72px;overflow:hidden;background:var(--soft);border-color:var(--line)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.badge.fix{background:#fdecea;color:#8a1c14}.badge.adjust{background:#fff6dc;color:#6b4e00}.badge.add{background:#e6f7ec;color:#006300}
+/* ── Feedback & annotate dialogs ── */
+#feedback-dialog{width:min(640px,calc(100% - var(--space)))}
+#feedback-form{display:grid;gap:var(--gap)}
+#feedback-form textarea{width:100%;min-height:120px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--control-radius);font:inherit;resize:vertical;background:var(--paper)}
+.kind-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border:0;padding:0;margin:0;min-width:0}
+.kind-options legend{padding:0;margin-bottom:6px;font-size:var(--small);color:var(--muted)}
+.kind-options label{display:flex;flex-direction:column;gap:2px;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:var(--control-radius);cursor:pointer;color:var(--ink)}
+.kind-options label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.kind-options label:has(input:focus-visible){outline:var(--focus) solid var(--accent);outline-offset:2px}
+.kind-options input{position:absolute;opacity:0;width:1px;height:1px}
+.kind-options strong{font-size:var(--subheading);font-weight:500}
+.kind-options small{color:var(--muted);font-size:var(--small)}
+.attach-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.attach-actions p{font-size:var(--small)}
+.attach-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.attach-list li{display:grid;gap:6px;padding:6px;border:1px solid var(--line);border-radius:var(--control-radius);background:var(--soft)}
+.attach-list img{width:100%;height:96px;object-fit:cover;border-radius:6px;background:var(--paper)}
+.attach-list div{display:flex;gap:6px}.attach-list button{flex:1;padding:4px 8px;min-height:32px}
+#feedback-message{min-height:1.6em;font-size:var(--small);color:var(--muted)}
+#feedback-message[data-error=true]{color:var(--danger)}
+#annotate-dialog{width:min(1100px,calc(100% - var(--space)));padding:var(--panel-pad)}
+.annotate-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:var(--gap)}
+.annotate-tools button[aria-pressed=true]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.swatch{width:var(--control);padding:0}
+.swatch span{width:18px;height:18px;border-radius:50%;background:var(--swatch);box-shadow:0 0 0 1px #0003}
+.tool-sep{width:1px;height:24px;background:var(--line)}
+.canvas-wrap{max-height:70vh;overflow:auto;background:var(--soft);border:1px solid var(--line);border-radius:var(--control-radius);display:grid;place-items:center}
+#annotate-canvas{max-width:100%;height:auto;touch-action:none;cursor:crosshair;display:block}
+#image-dialog{width:min(1100px,calc(100% - var(--space)))}
+#image-view{max-width:100%;height:auto;display:block;margin:auto}
+@media(max-width:850px){.crm-upload,.crm-grid{grid-template-columns:1fr}.kind-options{grid-template-columns:1fr}}
+@media(max-width:500px){.views{width:100%}.view-tab{flex:1 1 auto;padding:8px 10px}.header-actions{width:100%;justify-content:stretch}.header-actions button{flex:1}}
 </style>
 </head>
 <body>
-<header><div class="brand-lockup"><span class="brand-stamp"><span class="mascot" data-icon="hound" aria-hidden="true"></span></span><div><div class="brand" data-copy="brand"></div><div class="byline" data-copy="byline"></div></div></div><button id="logout" class="secondary" data-copy="logout" data-button-icon="logout" hidden></button></header>
+<header><div class="brand-lockup"><span class="brand-stamp"><span class="mascot" data-icon="hound" aria-hidden="true"></span></span><div><div class="brand" data-copy="brand"></div><div class="byline" data-copy="byline"></div></div></div><div class="header-actions"><button id="feedback-open" type="button" class="secondary" data-copy="feedbackOpen" data-button-icon="feedback" aria-haspopup="dialog" aria-controls="feedback-dialog" hidden></button><button id="logout" class="secondary" data-copy="logout" data-button-icon="logout" hidden></button></div></header>
 <main>
 <noscript><p class="nojs">กรุณาเปิด JavaScript เพื่อใช้งานรายงานแอดมิน</p></noscript>
 <section id="login-panel" aria-labelledby="login-title">
@@ -185,7 +306,8 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
   </form>
 </section>
 <p id="status" role="status" aria-live="polite"></p>
-<section id="dashboard" hidden aria-labelledby="report-title">
+<nav id="views" class="views" hidden data-copy-label="viewsLabel"><button type="button" class="view-tab" data-view-target="dashboard" data-copy="viewReports" data-button-icon="receipt"></button><button type="button" class="view-tab" data-view-target="crm" data-copy="viewCrm" data-button-icon="crm"></button><button type="button" class="view-tab" data-view-target="inbox" data-copy="viewInbox" data-button-icon="feedback"></button></nav>
+<section id="dashboard" data-view hidden aria-labelledby="report-title">
  <div class="topline"><div><p class="eyebrow" data-copy="workspace"></p><h1 tabindex="-1" id="report-title" data-copy="reportTitle"></h1><p data-copy="intro"></p></div><p id="timezone"></p></div>
  <div class="metrics" id="metrics">
   <div class="metric"><span class="icon" data-icon="receipt" aria-hidden="true"></span><span data-copy="claims"></span><strong id="metric-claims">—</strong></div>
@@ -210,6 +332,40 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
   <div class="pagination"><p id="page-info"></p><div><button id="prev" class="secondary" data-copy="prev" data-button-icon="previous"></button><button id="next" class="secondary" data-copy="next" data-button-icon="next"></button></div></div>
  </section>
  <footer data-copy="footer"></footer>
+</section>
+<section id="crm" data-view hidden aria-labelledby="crm-title">
+ <div class="topline"><div><p class="eyebrow" data-copy="crmEyebrow"></p><h1 tabindex="-1" id="crm-title" data-copy="crmTitle"></h1><p data-copy="crmIntro"></p></div></div>
+ <div class="crm-upload">
+  <label class="drop" id="crm-drop" for="crm-file"><span class="icon" data-icon="upload" aria-hidden="true"></span><strong data-copy="dropTitle"></strong><span data-copy="dropHint"></span><span class="badge" data-copy="dropButton"></span></label>
+  <input id="crm-file" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" multiple hidden>
+  <div class="panel"><h2><span class="icon" data-icon="checklist" aria-hidden="true"></span><span data-copy="uploadsTitle"></span></h2><p class="panel-note" data-copy="uploadsNote"></p><ul class="upload-list" id="crm-uploads"></ul></div>
+ </div>
+ <form id="crm-filters" class="crm-filters" novalidate>
+  <div><label for="crm-shop" data-copy="crmShop"></label><select id="crm-shop"></select></div>
+  <div><label for="crm-period" data-copy="crmPeriod"></label><select id="crm-period"></select></div>
+  <p id="crm-range"></p>
+ </form>
+ <div id="crm-error" hidden><p id="crm-error-text" role="status"></p><button id="crm-retry" type="button" data-copy="retry"></button></div>
+ <div id="crm-results">
+  <div class="metrics" id="crm-kpis"></div>
+  <ul class="insights" id="crm-insights"></ul>
+  <div id="crm-sales"></div>
+  <section class="report crm-section" aria-labelledby="crm-customers-title">
+   <div class="report-head"><div class="report-heading"><span class="icon" data-icon="customer" aria-hidden="true"></span><div><h2 id="crm-customers-title" data-copy="customersTitle"></h2><p class="panel-note" data-copy="customersNote"></p></div></div></div>
+   <div id="crm-customers"></div>
+  </section>
+  <section class="report crm-section" aria-labelledby="crm-match-title">
+   <div class="report-head"><div class="report-heading"><span class="icon" data-icon="match" aria-hidden="true"></span><div><h2 id="crm-match-title" data-copy="matchTitle"></h2><p class="panel-note" id="crm-match-note"></p></div></div></div>
+   <div id="crm-match"></div>
+  </section>
+ </div>
+</section>
+<section id="inbox" data-view hidden aria-labelledby="inbox-title">
+ <div class="topline"><div><p class="eyebrow" data-copy="inboxEyebrow"></p><h1 tabindex="-1" id="inbox-title" data-copy="inboxTitle"></h1><p data-copy="inboxIntro"></p></div><button type="button" id="inbox-new" data-copy="feedbackOpen" data-button-icon="feedback" aria-haspopup="dialog" aria-controls="feedback-dialog"></button></div>
+ <div class="chips panel" id="inbox-filter" role="group"></div>
+ <div id="inbox-error" hidden><p id="inbox-error-text" role="status"></p><button id="inbox-retry" type="button" data-copy="retry"></button></div>
+ <ul class="inbox-list" id="inbox-list"></ul>
+ <p class="empty-state" id="inbox-empty" data-copy="inboxEmpty" hidden></p>
 </section>
 </main>
 <dialog id="export-dialog" aria-labelledby="export-title" aria-describedby="export-help">
@@ -244,6 +400,35 @@ calendar-month::part(today){box-shadow:inset 0 0 0 1px var(--accent)}
   <div class="date-actions"><button type="button" id="date-cancel" class="secondary" data-copy="dateCancel"></button><button type="submit" id="date-confirm" data-copy="dateConfirm"></button></div>
  </form>
 </dialog>
+
+<dialog id="feedback-dialog" aria-labelledby="feedback-title" aria-describedby="feedback-help">
+ <form id="feedback-form" novalidate>
+  <div class="dialog-head"><h2 id="feedback-title" data-copy="feedbackTitle"></h2><button type="button" id="feedback-cancel-top" class="secondary" data-copy="close"></button></div>
+  <p id="feedback-help" data-copy="feedbackHelp"></p>
+  <fieldset class="kind-options" id="fb-kinds"><legend data-copy="fbKind"></legend></fieldset>
+  <div><label for="fb-topic" data-copy="fbTopic"></label><input id="fb-topic" list="fb-topics" autocomplete="off" data-copy-placeholder="fbTopicHint"><datalist id="fb-topics"></datalist></div>
+  <div><label for="fb-detail" data-copy="fbDetail"></label><textarea id="fb-detail" data-copy-placeholder="fbDetailHint"></textarea></div>
+  <div><label for="fb-reporter" data-copy="fbReporter"></label><input id="fb-reporter" autocomplete="name"></div>
+  <div><span class="label" data-copy="fbImages"></span>
+   <div class="attach-actions"><button type="button" id="fb-pick" class="secondary" data-copy="fbPick" data-button-icon="image"></button><button type="button" id="fb-capture" class="secondary" data-copy="fbCapture" data-button-icon="capture"></button><p data-copy="fbPasteHint"></p></div>
+   <input id="fb-file" type="file" accept="image/*" multiple hidden>
+   <ul class="attach-list" id="fb-attachments"></ul>
+  </div>
+  <p id="feedback-message" role="status"></p>
+  <div class="date-actions"><button type="button" id="feedback-cancel" class="secondary" data-copy="exportCancel"></button><button type="submit" id="feedback-send" data-copy="fbSend" data-button-icon="feedback"></button></div>
+ </form>
+</dialog>
+<dialog id="annotate-dialog" aria-labelledby="annotate-title">
+ <div class="dialog-head"><h2 id="annotate-title" data-copy="annotateTitle"></h2></div>
+ <div class="annotate-tools" id="annotate-tools" role="toolbar"></div>
+ <div class="canvas-wrap"><canvas id="annotate-canvas"></canvas></div>
+ <div class="date-actions" style="margin-top:var(--gap)"><button type="button" id="annotate-cancel" class="secondary" data-copy="exportCancel"></button><button type="button" id="annotate-save" data-copy="annotateSave" data-button-icon="pen"></button></div>
+</dialog>
+<dialog id="image-dialog" aria-labelledby="image-title">
+ <div class="dialog-head"><h2 id="image-title" data-copy="imageTitle"></h2><button type="button" id="image-close" class="secondary" data-copy="close"></button></div>
+ <div id="image-holder"></div>
+</dialog>
+<div id="crm-tip" hidden aria-hidden="true"></div>
 <script id="app-config">
 const CONFIG = {
  calendar:{script:'./vendor/cally.js',locale:'th-TH-u-ca-gregory',firstDayOfWeek:0,formatWeekday:'short',digits:2,timeMin:0,timeStep:1,units:[{key:'hour',max:23},{key:'minute',max:59},{key:'second',max:59}],displayOptions:{calendar:'gregory',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}},
@@ -268,6 +453,55 @@ const CONFIG = {
  statuses:{ok:'สแกนผ่าน / กลับมารับแต้ม',duplicate:'ใบเสร็จซ้ำ',bill_mismatch:'เลขบิลไม่ตรง',reprint:'ใบพิมพ์ซ้ำ',expired:'เกินเวลา',shop_closed:'สาขาปิดใช้งาน',unreadable:'อ่านไม่ได้',below_min:'ยอดไม่ถึง',no_link:'ไม่มีลิงก์รับแต้ม',rate_limited:'เกินจำนวนครั้ง',error:'ข้อผิดพลาด'},
  messages:{exportOpen:'Export รายงาน',exportTitle:'ดาวน์โหลดรายงาน',exportHelp:'เลือกข้อมูลที่ต้องการในไฟล์ Excel โดยใช้ตัวกรองที่แสดงรายงานแล้ว',exportChoose:'รูปแบบข้อมูล',exportSummary:'สรุป · ตามหน้าเว็บ',exportDetail:'Detail · รายละเอียดทั้งหมด',exportSummaryHint:'{columns} คอลัมน์ตามตารางนี้ · ครบทุกรายการที่ตรงตัวกรอง',exportDetailHint:'{reports} รายงาน · ทุกคอลัมน์ แยกเป็นชีตในไฟล์เดียว',exportCancel:'ยกเลิก',dateHelp:'เลือกวันและเวลา (เวลาไทย) แล้วกดตกลงเพื่ออัปเดตรายงาน',datePending:'ยังไม่ได้ใช้วันเวลาที่เลือก กดตกลงเพื่อแสดงรายงาน หรือยกเลิกเพื่อใช้ค่าเดิม',dateConfirm:'ตกลงและแสดงรายงาน',dateCancel:'ยกเลิก',dateHour:'ชั่วโมง',dateMinute:'นาที',dateSecond:'วินาที',datePrevious:'เดือนก่อน',dateNext:'เดือนถัดไป',dateInvalidTime:'ระบุเวลาให้ครบ ชั่วโมง 0–23 และนาที/วินาที 0–59',dateUnavailable:'เปิดปฏิทินไม่ได้ กรุณารีเฟรชหน้าเว็บแล้วลองใหม่',reportReady:'อัปเดตรายงานแล้ว',reportUpdated:'อัปเดตรายงานตามช่วงเวลาที่เลือกแล้ว',close:'ปิด',retry:'ลองโหลดอีกครั้ง',reportRequired:'โหลดรายงานให้สำเร็จก่อนดาวน์โหลดข้อมูล',appliedRange:'ข้อมูลที่แสดง: {start} ถึง {end}',currentConfig:'ข้อมูลตั้งค่าปัจจุบัน',unknownColumn:'ข้อมูลเพิ่มเติม',lineMissing:'ยังไม่มีข้อมูล LINE',lineProfileMissing:'ยังไม่มีชื่อโปรไฟล์',lineId:'เลขไอดี LINE',lineDetail:'ดูรายละเอียด LINE',deviceDetail:'ดูรายละเอียดอุปกรณ์ที่สแกน',deviceUnknown:'ไม่สามารถระบุอุปกรณ์ได้',deviceMissing:'ไม่มีข้อมูลอุปกรณ์',deviceSource:'ข้อมูลที่เบราว์เซอร์ส่งมา',sortHint:'กดเพื่อเรียง {column} {direction}',asc:'จากน้อยไปมาก',desc:'จากมากไปน้อย',brand:'BEANHOUND',byline:'by Greyhound Café · REPORTS',workspace:'BEANHOUND / REPORTS',loginTitle:'เข้าสู่ระบบแอดมิน',loginHint:'ดูรายงานการรับแต้มและประวัติการสแกน',username:'ชื่อบัญชี',password:'รหัสผ่าน',showPassword:'แสดง',hidePassword:'ซ่อน',login:'เข้าสู่ระบบ',logout:'ออกจากระบบ',reportTitle:'รายงานการรับแต้ม',intro:'ตรวจสอบใบเสร็จ การสแกน และแต้มในที่เดียว',dataset:'รายงาน',start:'ตั้งแต่ (เวลาไทย)',end:'ถึง (เวลาไทย)',shop:'สาขา',bill:'ค้นหาเลขใบเสร็จ',clear:'ล้าง',result:'สถานะ',search:'ค้นหา',clearFilters:'ล้างตัวกรอง',clearFiltersHint:'กลับเป็นวันนี้ และล้างสาขา เลขใบเสร็จ สถานะ และการเรียง',filtersReset:'ล้างตัวกรองแล้ว แสดงข้อมูลของวันนี้',claims:'ใบเสร็จผ่านการตรวจ',points:'แต้มที่คำนวณได้',scans:'จำนวนสแกน',duplicates:'สแกนซ้ำ',exportExcel:'ดาวน์โหลด Excel',empty:'ไม่พบข้อมูลตามตัวกรอง ลองเลือกช่วงเวลาอื่น',prev:'ก่อนหน้า',next:'ถัดไป',footer:'สถานะกดรับบันทึกการเปิด LINE ไม่ยืนยันว่าแต้มเข้าแล้ว • รายการเดิมที่ไม่มีเวลากดรับจะแสดงว่าไม่ทราบการกดรับ • Export เลือกแบบสรุปหรือ Detail ได้',all:'ทั้งหมด',detail:'ดูรายละเอียด',collapse:'ย่อรายละเอียด',loading:'กำลังโหลดข้อมูล…',exporting:'กำลังสร้างไฟล์รายงาน…',ready:'',error:'โหลดข้อมูลไม่ได้ กรุณาลองใหม่',required:'กรอกชื่อบัญชีและรหัสผ่านให้ครบ',invalidRange:'วันเวลาเริ่มต้นต้องไม่เกินวันเวลาสิ้นสุด กรุณาเลือกใหม่',session:'session หมดอายุ กรุณาเข้าสู่ระบบใหม่',loggedOut:'ออกจากระบบแล้ว',logoutOffline:'ออกจากระบบบนเครื่องนี้แล้ว แต่ติดต่อเซิร์ฟเวอร์ไม่ได้ session เดิมจะสิ้นสุดเมื่อหมดอายุ',saved:'ดาวน์โหลดรายงานแล้ว',rangeNote:'ยืนยันวันเวลา หรือเลือกสาขาและสถานะแล้วรายงานจะอัปเดตทันที • ค้นหาเลขใบเสร็จด้วยปุ่มค้นหาหรือ Enter',configNote:'ข้อมูลตั้งค่าปัจจุบัน ไม่ใช้ตัวกรองวันเวลา สาขา หรือเลขบิล',summaryNote:'สรุปธุรกรรมตามช่วงเวลา สาขา และเลขบิล ไม่จำกัดสถานะ',records:'{count} รายการ',page:'หน้า {page} / {pages}',timezone:'เขตเวลา {zone}',caption:'กดหัวคอลัมน์เพื่อสลับการเรียง • เลื่อนซ้าย–ขวาเพื่อดูทุกคอลัมน์ • กดดูรายละเอียดสำหรับข้อมูลยาว • Export รวมทุกรายการที่ตรงตัวกรอง',ellipsis:'…',dash:'—',pageSize:'แสดง',pageSizeUnit:'รายการต่อหน้า',noScript:'กรุณาเปิด JavaScript เพื่อใช้งานรายงานแอดมิน'}
 };
+Object.assign(CONFIG.icons,{crm:'icons/crm.svg',upload:'icons/upload.svg',feedback:'icons/feedback.svg',pen:'icons/pen.svg',undo:'icons/undo.svg',image:'icons/image.svg',capture:'icons/capture.svg',customer:'icons/customer.svg',clock:'icons/clock.svg',coffee:'icons/coffee.svg',match:'icons/match.svg',warning:'icons/warning.svg',checklist:'icons/checklist.svg'});
+CONFIG.crm={
+ svgNs:'http://www.w3.org/2000/svg',
+ chart:{height:220,minWidth:280,margin:{top:22,right:8,bottom:26,left:44},barMax:24,barRatio:0.7,radius:4,ticks:4,labelGap:46,labelOffset:16,tickGap:6,peakGap:6},
+ percentDigits:1,averageDigits:1,customerIdChars:8,tipOffset:14,secondsPerMinute:60,msPerSecond:1000,
+ periods:{all:'ทั้งหมดที่มีข้อมูล',last7:'7 วันล่าสุดของข้อมูล',last30:'30 วันล่าสุดของข้อมูล'},lastDays:{last7:7,last30:30},
+ weekdays:['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'],
+ monthFormat:{month:'long',year:'numeric'},dayFormat:{day:'numeric',month:'short',year:'2-digit'},timeFormat:{dateStyle:'short',timeStyle:'short'},
+ kinds:{journal:'Journal (POS)',line:'แต้ม LINE'},
+ statuses:{ok:{label:'ตรงกัน',tone:'good'},points_differ:{label:'แต้มไม่ตรงกับ LINE',tone:'critical'},line_missing:{label:'ไม่พบแต้มใน LINE',tone:'critical'},pos_missing:{label:'ไม่พบบิลใน POS',tone:'critical'},amount_differ:{label:'ยอดไม่ตรงกับ POS',tone:'critical'},many_same_day:{label:'คนเดียวรับหลายใบในวันเดียว',tone:'warning'},reprinted:{label:'ใบเสร็จนี้ถูกพิมพ์ซ้ำ',tone:'warning'},not_clicked:{label:'ลูกค้ายังไม่กดรับแต้ม',tone:'info'},line_not_loaded:{label:'ยังไม่มีไฟล์ LINE ช่วงนี้',tone:'info'},pos_not_loaded:{label:'ยังไม่มี Journal ช่วงนี้',tone:'info'}},
+ matchColumns:['row','shop','bill','amount','pos','points','line_points','clicked','line_at','gap','customer','items','status'],
+ customerColumns:['row','customer','visits','points','first','last','gap','receipts','items'],
+};
+CONFIG.feedback={
+ kinds:{fix:{label:'แก้ไข',hint:'มีจุดที่ทำงานผิด หรือแสดงผลไม่ถูก'},adjust:{label:'ปรับ',hint:'ใช้ได้แล้ว แต่อยากให้ปรับให้ดีขึ้น'},add:{label:'ต้องเพิ่ม',hint:'อยากได้ความสามารถหรือข้อมูลใหม่'}},
+ topics:['รายงานรับแต้ม','ตัวกรองและช่วงวันที่','Export Excel','CRM · ยอดขายและเมนูขายดี','CRM · ลูกค้า LINE','CRM · เทียบข้อมูล POS และ LINE','อัปโหลดไฟล์','หน้าลูกค้าสแกนใบเสร็จ','อื่น ๆ'],
+ statuses:{new:'ใหม่',seen:'รับทราบแล้ว',doing:'กำลังดำเนินการ',done:'เสร็จแล้ว'},
+ maxImages:5,maxPx:2400,stroke:4,strokeRatio:0.004,arrowAngle:0.5,arrowScale:5,
+ tools:{pen:'ปากกา',circle:'วงกลม',rect:'สี่เหลี่ยม',arrow:'ลูกศร'},
+ colors:[{label:'แดง',value:'#e0262b'},{label:'เหลือง',value:'#f5b400'},{label:'ดำ',value:'#161616'},{label:'ขาว',value:'#ffffff'}],
+ imageType:'image/png',
+};
+Object.assign(CONFIG.messages,{
+ viewsLabel:'เลือกพื้นที่ทำงาน',viewReports:'รายงานรับแต้ม',viewCrm:'CRM วิเคราะห์',viewInbox:'กล่องข้อเสนอแนะ',close:'ปิด',
+ crmEyebrow:'CRM · วิเคราะห์ลูกค้าและยอดขาย',crmTitle:'วิเคราะห์ยอดขาย ลูกค้า และเทียบข้อมูล',crmIntro:'อัปโหลด Journal จาก CM POS และประวัติแต้มจาก LINE แล้วระบบจะสรุปเมนูขายดี ช่วงเวลา ลูกค้าที่กลับมาซ้ำ และตรวจว่าใบเสร็จในระบบตรงกับ POS และ LINE หรือไม่',
+ dropTitle:'ลากไฟล์มาวางที่นี่ หรือกดเพื่อเลือกไฟล์',dropHint:'Journal (.xlsx) จาก CM POS หรือประวัติแต้มบัตร LINE (.csv) · เลือกหลายไฟล์พร้อมกันได้',dropButton:'เลือกไฟล์',
+ uploadsTitle:'ไฟล์ที่นำเข้าแล้ว',uploadsNote:'อัปโหลดช่วงวันที่ซ้ำได้ ระบบจะแทนที่ข้อมูลช่วงนั้นด้วยไฟล์ใหม่ ไม่นับซ้ำ',uploadsEmpty:'ยังไม่มีไฟล์ อัปโหลด Journal เพื่อเริ่มวิเคราะห์',
+ uploadRow:'{range} · {count}',uploadBills:'{bills} บิล · {rows} บรรทัด',uploadLines:'{rows} รายการแต้ม',
+ uploading:'กำลังนำเข้า {name}…',uploadedJournal:'นำเข้า Journal แล้ว {bills} บิล ({range}){replaced}',uploadedLine:'นำเข้าประวัติแต้ม LINE แล้ว {rows} รายการ ลูกค้า {customers} คน ({range}){replaced}',replacedNote:' · แทนข้อมูลเดิม {count} รายการ',
+ crmShop:'สาขา',crmPeriod:'ช่วงเวลา',allShops:'ทุกสาขา',noJournal:'ยังไม่มี Journal',notInSystem:'ไม่อยู่ในระบบรับแต้ม',crmRange:'ข้อมูลยอดขาย {sales} · ลูกค้า LINE {line}',noData:'ไม่มีข้อมูล',
+ crmLoading:'กำลังวิเคราะห์ข้อมูล…',crmReady:'อัปเดตการวิเคราะห์แล้ว',crmEmpty:'ยังไม่มีข้อมูลยอดขาย อัปโหลดไฟล์ Journal จาก CM POS ด้านบนเพื่อเริ่มวิเคราะห์',
+ kpiBills:'บิลขาย',kpiRevenue:'ยอดขายสุทธิ',kpiAvg:'เฉลี่ยต่อบิล',kpiScan:'บิลที่สแกนรับแต้ม',kpiScanSub:'{claims} ใบ · {points} แต้ม จากระบบสแกน',kpiDays:'{days} วันที่มีขาย',
+ baht:'{value} บาท',cups:'{value} แก้ว',billsUnit:'{value} บิล',times:'{value} ครั้ง',daysUnit:'{value} วัน',pointsUnit:'{value} แต้ม',people:'{value} คน',
+ insightTop:'เมนูขายดีอันดับ 1',insightTopValue:'{name} · {qty} แก้ว',insightHour:'ช่วงเวลาที่ขายดีที่สุด',insightHourValue:'{hour}:00–{hour}:59 น. · {bills} บิล',insightDay:'วันที่ขายดีที่สุด',insightDayValue:'วัน{day} · {bills} บิล',insightOption:'ตัวเลือกยอดนิยม',insightOptionValue:'{name} · {share} ของตัวเลือกทั้งหมด',insightStaff:'บิลที่ใช้ส่วนลดพนักงาน',insightStaffValue:'{share} ของบิลทั้งหมด ({bills} บิล)',insightReprint:'บิลที่พิมพ์ใบเสร็จซ้ำ',insightReprintValue:'{bills} บิล · ใบพิมพ์ซ้ำอาจถูกนำมาสแกนรับแต้มซ้ำ',insightStamp:'ใช้สิทธิ์บัตรสะสมแต้ม (POS)',insightStampValue:'แก้วฟรี {free} · ลด 50% {half} บิล',
+ chartDaily:'ยอดขายรายวัน',chartDailyNote:'ยอดสุทธิหลังหักส่วนลด',chartHourly:'จำนวนบิลตามช่วงเวลา',chartHourlyNote:'ชี้ที่แท่งเพื่อดูเมนูขายดีของชั่วโมงนั้น',chartWeekday:'จำนวนบิลตามวันในสัปดาห์',chartTop:'เมนูขายดี',chartTopNote:'นับจำนวนแก้ว/ชิ้น หักรายการที่ยกเลิกแล้ว',chartOptions:'ตัวเลือกที่ลูกค้าเลือก',chartOptionsNote:'เช่น เมล็ดกาแฟ Dark / Medium / Light',chartPayments:'ช่องทางชำระเงิน',chartModes:'ช่องทางขาย',chartDiscounts:'ส่วนลดและสิทธิ์ที่ใช้',chartDiscountsNote:'จำนวนบิลที่ใช้ และมูลค่าส่วนลดรวม',
+ tableView:'ดูเป็นตาราง',colLabel:'รายการ',colValue:'ค่า',hourLabel:'{hour}:00',tipBills:'{bills} บิล · {revenue}',tipTopItem:'ขายดี: {name}',tipQty:'{qty} · {revenue}',
+ customersTitle:'ลูกค้าบัตรสะสมแต้ม LINE',customersNote:'นับจากไฟล์ประวัติแต้ม LINE ซึ่งรวมทุกสาขา (ไฟล์ LINE ไม่มีข้อมูลสาขา) · 1 วันที่ได้แต้ม = 1 ครั้งที่มา',customersEmpty:'ยังไม่มีประวัติแต้ม LINE อัปโหลดไฟล์ .csv จาก LINE OA เพื่อนับลูกค้ารายคน',
+ kpiCustomers:'ลูกค้าที่สะสมแต้ม',kpiRepeat:'กลับมาซ้ำ',kpiRepeatSub:'{repeat} คน มามากกว่า 1 วัน',kpiVisits:'มาเฉลี่ยต่อคน',kpiNew:'สมัครใหม่ (โบนัสต้อนรับ)',
+ bucketsTitle:'จำนวนครั้งที่ลูกค้ามา',bucketLabel:'{from}–{to} ครั้ง',bucketOne:'{from} ครั้ง',bucketOpen:'{from} ครั้งขึ้นไป',topCustomers:'ลูกค้าที่มาบ่อยที่สุด',
+ colRow:'ลำดับ',colCustomer:'ลูกค้า (รหัสบัตร LINE)',colVisits:'วันที่มา',colPoints:'แต้มรวม',colFirst:'ครั้งแรก',colLast:'ล่าสุด',colGap:'ห่างเฉลี่ย (วัน)',colReceipts:'ใบเสร็จที่จับคู่ได้',colItems:'เมนูที่ซื้อ (จากใบเสร็จที่จับคู่ได้)',
+ matchTitle:'เทียบใบเสร็จ: ระบบเรา · POS · LINE',matchNote:'จับคู่แต้ม LINE จากเวลากดรับแต้มภายใน ±{window} นาที และจำนวนแต้มที่เท่ากัน{typical}',matchEarlier:' · ปกติเวลาใน LINE เร็วกว่าเวลากดรับในระบบประมาณ {gap} วินาที (นาฬิกาคนละระบบ)',matchLater:' · ปกติเวลาใน LINE ช้ากว่าเวลากดรับในระบบประมาณ {gap} วินาที',colGapHint:'ติดลบ = LINE บันทึกก่อนเวลากดรับในระบบ',matchEmpty:'ไม่มีใบเสร็จในระบบรับแต้มช่วงนี้',matchTable:'ตารางผลตรวจรายใบเสร็จ',
+ colShop:'สาขา',colBill:'ใบเสร็จ',colAmount:'ยอด (ระบบ)',colPos:'ยอด POS',colOurPoints:'แต้ม (ระบบ)',colLinePoints:'แต้ม LINE',colClicked:'กดรับแต้ม',colLineAt:'เวลาใน LINE',colGapSec:'ห่าง (วินาที)',colStatus:'ผลตรวจ',
+ inboxEyebrow:'ข้อเสนอแนะจากผู้ใช้หลังบ้าน',inboxTitle:'กล่องข้อเสนอแนะ',inboxIntro:'รวมคำขอแก้ไข ปรับ หรือเพิ่มระบบ พร้อมรูปที่แนบมา เปลี่ยนสถานะเพื่อติดตามงาน',inboxEmpty:'ยังไม่มีข้อเสนอแนะ',inboxAll:'ทั้งหมด',inboxMeta:'{time} · โดย {reporter} · จากหน้า {page}',anonymous:'ไม่ระบุชื่อ',fbStatus:'สถานะ',statusSaved:'บันทึกสถานะแล้ว',
+ feedbackOpen:'ข้อเสนอแนะ',feedbackTitle:'ส่งข้อเสนอแนะ / แจ้งปรับระบบ',feedbackHelp:'บอกทีม IT ว่าต้องการแก้ไข ปรับ หรือเพิ่มอะไร แนบรูปหรือแคปหน้าจอ แล้ววงหรือขีดเขียนจุดที่ต้องการได้',
+ fbKind:'ประเภท',fbTopic:'ตรงหัวข้อไหน',fbTopicHint:'เลือกหรือพิมพ์หัวข้อ',fbDetail:'รายละเอียด',fbDetailHint:'อธิบายว่าเห็นอะไร อยากให้แก้หรือเพิ่มอะไร และควรทำงานอย่างไร',fbReporter:'ชื่อผู้แจ้ง (ไม่บังคับ)',
+ fbImages:'รูปประกอบ (สูงสุด {max} รูป)',fbPick:'แนบรูป',fbCapture:'แคปหน้าจอ',fbPasteHint:'หรือกด Ctrl+V เพื่อวางรูปที่แคปไว้',fbDraw:'วาด / วง',fbRemove:'ลบ',fbSend:'ส่งข้อเสนอแนะ',fbSending:'กำลังส่ง…',fbSent:'ส่งข้อเสนอแนะแล้ว ขอบคุณครับ',
+ fbNeedKind:'กรุณาเลือกประเภท',fbNeedTopic:'กรุณาระบุหัวข้อ',fbNeedDetail:'กรุณาเขียนรายละเอียด',fbTooMany:'แนบได้ไม่เกิน {max} รูป',fbNotImage:'ไฟล์นี้ไม่ใช่รูปภาพ',captureUnsupported:'เบราว์เซอร์นี้แคปหน้าจอไม่ได้ ให้ใช้ปุ่มแนบรูป หรือวางรูปด้วย Ctrl+V',captureCancelled:'ยกเลิกการแคปหน้าจอ',
+ annotateTitle:'วาด วง หรือชี้จุดบนรูป',annotateSave:'บันทึกรูป',annotateUndo:'ย้อนกลับ',annotateClear:'ล้างที่วาด',annotateColor:'สี {color}',imageTitle:'รูปที่แนบ',attachmentAlt:'รูปแนบที่ {n}',
+});
 </script>
 <script id="app-main">
 'use strict';
@@ -280,7 +514,7 @@ const calendarReady=import(CONFIG.calendar.script).then(()=>true,()=>false);
 const copy=(key,values={})=>Object.entries(values).reduce((s,[k,v])=>s.replaceAll('{'+k+'}',v),CONFIG.messages[key]);
 function status(message='',error=false){$('status').textContent=message;$('status').dataset.error=String(error);}
 function busy(value){state.busy=value;document.querySelectorAll('button,input,select').forEach(el=>el.disabled=value);$('prev').disabled=value||state.page<=1;$('next').disabled=value||state.page>=state.pages;$('export-open').disabled=value||!state.appliedFilters;$('dashboard').setAttribute('aria-busy',String(value));}
-function lock(message){state.generation++;state.token=null;state.meta=null;state.appliedFilters=null;state.appliedColumns=[];if($('export-dialog').open)$('export-dialog').close();if($('date-dialog').open)$('date-dialog').close();if($('device-dialog').open)$('device-dialog').close();$('device-value').textContent='';$('device-title').textContent='';$('table-feedback').hidden=true;$('applied-range').textContent='';for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');$('count').textContent='';$('page-info').textContent='';$('password').type='password';$('toggle-password').textContent=copy('showPassword');$('toggle-password').setAttribute('aria-pressed','false');$('password').value='';$('tbody').replaceChildren();$('thead').replaceChildren();$('dashboard').hidden=true;$('login-panel').hidden=false;$('logout').hidden=true;status(message,true);$('username').disabled=false;$('username').focus();}
+function lock(message){state.generation++;state.token=null;state.meta=null;state.appliedFilters=null;state.appliedColumns=[];if($('export-dialog').open)$('export-dialog').close();if($('date-dialog').open)$('date-dialog').close();if($('device-dialog').open)$('device-dialog').close();$('device-value').textContent='';$('device-title').textContent='';$('table-feedback').hidden=true;$('applied-range').textContent='';for(const key of ['claims','points','scans','duplicates'])$('metric-'+key).textContent=copy('dash');$('count').textContent='';$('page-info').textContent='';$('password').type='password';$('toggle-password').textContent=copy('showPassword');$('toggle-password').setAttribute('aria-pressed','false');$('password').value='';$('tbody').replaceChildren();$('thead').replaceChildren();$('dashboard').hidden=true;$('login-panel').hidden=false;$('logout').hidden=true;status(message,true);$('username').disabled=false;if(typeof crmLock==='function')crmLock();$('username').focus();}
 async function api(path,options={}){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
  const requestToken=state.token;const headers={...(requestToken?{Authorization:'Bearer '+requestToken}:{}),...options.headers};
@@ -364,7 +598,7 @@ async function load(){
 }
 // Choices come from the server allowlist; a non-numeric choice is the show-all option.
 function pageSizes(meta){const choices=(meta.page_sizes||[meta.page_size]).map(String);$('page-size').replaceChildren(...choices.map(value=>option(value,Number.isFinite(Number(value))?number.format(Number(value)):copy('all'))));if(!choices.includes(state.pageSize))state.pageSize=String(meta.page_size);$('page-size').value=state.pageSize;}
-async function initialize(){const meta=await (await api('/meta')).json();state.meta=meta;$('start').value=meta.start;$('end').value=meta.end;refreshDateLabels();$('shop').replaceChildren(option('',copy('all')),...meta.shops.map(s=>option(s.shop_code,s.shop_code+' · '+s.name)));$('result').replaceChildren(option('',copy('all')),...meta.statuses.map(s=>option(s,CONFIG.statuses[s]||s)));$('timezone').textContent=copy('timezone',{zone:meta.timezone});pageSizes(meta);$('login-panel').hidden=true;$('dashboard').hidden=false;$('logout').hidden=false;$('password').value='';datasetControls();}
+async function initialize(){const meta=await (await api('/meta')).json();state.meta=meta;$('start').value=meta.start;$('end').value=meta.end;refreshDateLabels();$('shop').replaceChildren(option('',copy('all')),...meta.shops.map(s=>option(s.shop_code,s.shop_code+' · '+s.name)));$('result').replaceChildren(option('',copy('all')),...meta.statuses.map(s=>option(s,CONFIG.statuses[s]||s)));$('timezone').textContent=copy('timezone',{zone:meta.timezone});pageSizes(meta);$('login-panel').hidden=true;$('dashboard').hidden=false;$('logout').hidden=false;$('password').value='';datasetControls();if(typeof crmReady==='function')crmReady();}
 document.getElementById('login-form').addEventListener('submit',async event=>{event.preventDefault();if(state.busy)return;for(const id of ['username','password'])$(id).setAttribute('aria-invalid',String(!$(id).value));if(!$('username').value||!$('password').value){status(copy('required'),true);(!$('username').value?$('username'):$('password')).focus();return;}busy(true);status(copy('loading'));try{const result=await (await api('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('username').value,password:$('password').value})})).json();state.token=result.token;await initialize();}catch(error){status(error.message,true);}finally{busy(false);}if(state.token&&!$('dashboard').hidden){await load();if(state.token)$('report-title').focus();}});
 document.getElementById('logout').addEventListener('click',async()=>{if(state.busy)return;busy(true);let failed=false;try{await api('/logout',{method:'POST'});}catch{failed=true;}finally{lock(copy(failed?'logoutOffline':'loggedOut'));status(copy(failed?'logoutOffline':'loggedOut'),failed);busy(false);}});
 document.getElementById('toggle-password').addEventListener('click',()=>{const shown=$('password').type==='password';$('password').type=shown?'text':'password';$('toggle-password').textContent=copy(shown?'hidePassword':'showPassword');$('toggle-password').setAttribute('aria-pressed',String(shown));});
@@ -435,6 +669,429 @@ $('clear-filters').title=copy('clearFiltersHint');
 document.querySelectorAll('[data-icon]').forEach(el=>el.style.setProperty('--icon-url','url("'+CONFIG.icons[el.dataset.icon]+'")'));
 document.querySelectorAll('[data-button-icon]').forEach(el=>el.prepend(localIcon(el.dataset.buttonIcon)));
 const font=document.createElement('link');font.rel='stylesheet';font.href=CONFIG.fontUrl;document.head.append(font);
+</script>
+<script id="app-crm">
+'use strict';
+// CRM workspace, feedback box and image annotation. Shares $, state, api, copy, busy, status,
+// option, localIcon and number from app-main. All copy and settings come from CONFIG.
+const crm={view:'dashboard',loaded:false,meta:null,generation:0,data:null,attachments:[],annotate:null,inbox:null,inboxFilter:'',images:new Map(),charts:[],resizeFrame:0};
+const C=CONFIG.crm,F=CONFIG.feedback;
+const percent=new Intl.NumberFormat(CONFIG.locale,{style:'percent',maximumFractionDigits:C.percentDigits});
+const average=new Intl.NumberFormat(CONFIG.locale,{maximumFractionDigits:C.averageDigits});
+const monthName=new Intl.DateTimeFormat(CONFIG.locale,{...C.monthFormat,timeZone:CONFIG.timezone});
+const dayName=new Intl.DateTimeFormat(CONFIG.locale,{...C.dayFormat,timeZone:CONFIG.timezone});
+const stamp=new Intl.DateTimeFormat(CONFIG.locale,{...C.timeFormat,timeZone:CONFIG.timezone});
+const baht=value=>copy('baht',{value:number.format(value)});
+
+function node(tag,attrs={},...children){
+ const el=document.createElement(tag);
+ for(const [key,value] of Object.entries(attrs)){if(value===null||value===undefined||value===false)continue;if(key==='text')el.textContent=value;else if(key==='class')el.className=value;else if(key.startsWith('on'))el.addEventListener(key.slice(2),value);else el.setAttribute(key,value===true?'':String(value));}
+ el.append(...children.filter(child=>child!==null&&child!==undefined&&child!==false));
+ return el;
+}
+function svg(tag,attrs={},text){const el=document.createElementNS(C.svgNs,tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,String(value));if(text!==undefined)el.textContent=text;return el;}
+const day=value=>value?dayName.format(new Date(value+'T00:00:00'+CONFIG.offset)):copy('dash');
+const moment=value=>value?stamp.format(new Date(String(value).replace(' ','T')+CONFIG.offset)):copy('dash');
+const when=epoch=>stamp.format(new Date(epoch*C.msPerSecond));
+const shortId=id=>id&&id.length>C.customerIdChars?id.slice(0,C.customerIdChars)+'…':(id||copy('dash'));
+
+// ── Workspace switching ────────────────────────────────────────────────────
+function showView(name,focus=true){
+ if(state.busy&&focus)return;
+ crm.view=name;
+ document.querySelectorAll('[data-view]').forEach(section=>section.hidden=section.id!==name);
+ document.querySelectorAll('[data-view-target]').forEach(tab=>tab.dataset.viewTarget===name?tab.setAttribute('aria-current','page'):tab.removeAttribute('aria-current'));
+ if(name==='crm'&&!crm.loaded)crmStart();else if(name==='crm')requestAnimationFrame(drawCharts);
+ if(name==='inbox')loadInbox();
+ if(focus)$(name==='dashboard'?'report-title':name+'-title')?.focus();
+}
+function crmReady(){$('views').hidden=false;$('feedback-open').hidden=false;showView('dashboard',false);}
+function crmLock(){
+ crm.generation++;crm.loaded=false;crm.meta=null;crm.shopChosen=false;crm.data=null;crm.inbox=null;crm.charts=[];
+ for(const id of ['feedback-dialog','annotate-dialog','image-dialog'])if($(id).open)$(id).close();
+ $('views').hidden=true;$('feedback-open').hidden=true;document.querySelectorAll('[data-view]').forEach(section=>section.hidden=true);
+ for(const id of ['crm-uploads','crm-kpis','crm-insights','crm-sales','crm-customers','crm-match','inbox-list','inbox-filter','crm-shop','crm-period'])$(id).replaceChildren();
+ $('crm-range').textContent='';$('crm-match-note').textContent='';$('crm-error').hidden=true;$('inbox-error').hidden=true;hideTip();
+ for(const url of crm.images.values())URL.revokeObjectURL(url);crm.images.clear();
+ resetFeedback();
+}
+
+// ── CRM data ───────────────────────────────────────────────────────────────
+async function crmStart(){
+ if(!state.token||state.busy)return;
+ busy(true);status(copy('crmLoading'));
+ try{await loadMeta();}catch(error){showCrmError(error);busy(false);return;}
+ busy(false);await loadCrm();
+}
+async function loadMeta(){
+ const meta=await (await api('/crm/meta')).json();
+ crm.meta=meta;crm.loaded=true;renderUploads(meta.uploads);fillFilters(meta);
+}
+function showCrmError(error){if(!state.token)return;$('crm-error-text').textContent=error.message;$('crm-error').hidden=false;status(error.message,true);}
+function fillFilters(meta){
+ const previousShop=$('crm-shop').value,previousPeriod=$('crm-period').value;
+ $('crm-shop').replaceChildren(option('',copy('allShops')),...meta.shops.map(shop=>option(shop.code,shop.code+' · '+shop.name+(shop.has_journal?'':' · '+copy('noJournal'))+(shop.in_system?'':' · '+copy('notInSystem')))));
+ const firstWithSales=meta.shops.find(shop=>shop.has_journal);
+ $('crm-shop').value=crm.shopChosen&&(previousShop===''||meta.shops.some(shop=>shop.code===previousShop))?previousShop:(firstWithSales?firstWithSales.code:'');
+ const ends=[meta.journal.end,meta.line.end].filter(Boolean).sort(),starts=[meta.journal.start,meta.line.start].filter(Boolean).sort();
+ const latest=ends[ends.length-1],earliest=starts[0];
+ const choices=[option('',C.periods.all)];
+ if(latest){
+  for(const [key,days] of Object.entries(C.lastDays)){const from=new Date(latest+'T00:00:00Z');from.setUTCDate(from.getUTCDate()-days+1);choices.push(option(from.toISOString().slice(0,10)+'|'+latest,C.periods[key]));}
+  const cursor=new Date(earliest.slice(0,7)+'-01T00:00:00Z'),stop=new Date(latest.slice(0,7)+'-01T00:00:00Z'),months=[];
+  while(cursor<=stop){const first=cursor.toISOString().slice(0,10);const next=new Date(cursor);next.setUTCMonth(next.getUTCMonth()+1);const last=new Date(next-1).toISOString().slice(0,10);months.unshift(option(first+'|'+last,monthName.format(new Date(first+'T00:00:00'+CONFIG.offset))));cursor.setUTCMonth(cursor.getUTCMonth()+1);}
+  choices.push(...months);
+ }
+ $('crm-period').replaceChildren(...choices);
+ if([...$('crm-period').options].some(item=>item.value===previousPeriod))$('crm-period').value=previousPeriod;
+ const range=part=>part.start?day(part.start)+' – '+day(part.end):copy('noData');
+ $('crm-range').textContent=copy('crmRange',{sales:range(meta.journal),line:range(meta.line)});
+}
+function period(){const [start='',end='']=($('crm-period').value||'|').split('|');return {start,end};}
+async function loadCrm(){
+ if(!state.token||state.busy||!crm.meta)return;
+ const generation=++crm.generation,{start,end}=period(),shop=$('crm-shop').value;
+ busy(true);$('crm-error').hidden=true;$('crm-results').classList.add('is-loading');$('crm').setAttribute('aria-busy','true');status(copy('crmLoading'));
+ try{
+  const scoped=new URLSearchParams({shop,start,end}),dated=new URLSearchParams({start,end});
+  const [overview,customers,match]=await Promise.all([api('/crm/overview?'+scoped),api('/crm/customers?'+dated),api('/crm/reconcile?'+scoped)].map(request=>request.then(response=>response.json())));
+  if(generation!==crm.generation||!state.token)return;
+  crm.data={overview,customers,match};renderCrm();status(copy('crmReady'));
+ }catch(error){if(generation===crm.generation)showCrmError(error);}
+ finally{busy(false);$('crm-results').classList.remove('is-loading');$('crm').removeAttribute('aria-busy');}
+}
+
+// ── Uploads ────────────────────────────────────────────────────────────────
+function renderUploads(uploads){
+ const list=$('crm-uploads');
+ if(!uploads.length){list.replaceChildren(node('li',{},node('span',{class:'name',text:copy('uploadsEmpty')})));return;}
+ list.replaceChildren(...uploads.map(upload=>{
+  const range=upload.start?day(upload.start.slice(0,10))+' – '+day(upload.end.slice(0,10)):copy('dash');
+  const count=upload.kind==='journal'?copy('uploadBills',{bills:number.format(upload.bills||0),rows:number.format(upload.rows)}):copy('uploadLines',{rows:number.format(upload.rows)});
+  return node('li',{},node('span',{class:'badge '+upload.kind,text:C.kinds[upload.kind]||upload.kind}),node('div',{},node('span',{class:'name',text:upload.filename}),node('small',{text:copy('uploadRow',{range,count})})),node('small',{text:when(upload.created)}));
+ }));
+}
+async function uploadFiles(files){
+ if(!state.token||state.busy||!files.length)return;
+ busy(true);let failed=null;
+ for(const file of files){
+  status(copy('uploading',{name:file.name}));
+  try{
+   const form=new FormData();form.append('file',file,file.name);
+   const result=await (await api('/crm/upload',{method:'POST',body:form})).json();
+   const replaced=result.replaced?copy('replacedNote',{count:number.format(result.replaced)}):'';
+   const range=day(result.start.slice(0,10))+' – '+day(result.end.slice(0,10));
+   status(result.kind==='journal'?copy('uploadedJournal',{bills:number.format(result.bills),range,replaced}):copy('uploadedLine',{rows:number.format(result.rows),customers:number.format(result.customers),range,replaced}));
+  }catch(error){failed=error;status(file.name+' · '+error.message,true);break;}
+ }
+ busy(false);
+ if(!state.token)return;
+ try{await loadMeta();}catch(error){showCrmError(error);return;}
+ const message=$('status').textContent,isError=!!failed;
+ await loadCrm();status(message,isError);
+}
+
+// ── Charts ─────────────────────────────────────────────────────────────────
+function niceTicks(max,count){
+ if(!(max>0))return [0,1];
+ const raw=max/count,power=Math.pow(10,Math.floor(Math.log10(raw))),unit=raw/power;
+ const step=(unit<=1?1:unit<=2?2:unit<=5?5:10)*power,ticks=[];
+ for(let value=0;value<=max+step*1e-9;value+=step)ticks.push(value);
+ if(ticks[ticks.length-1]<max)ticks.push(ticks[ticks.length-1]+step);
+ return ticks;
+}
+const compact=new Intl.NumberFormat(CONFIG.locale,{notation:'compact',maximumFractionDigits:1});
+function roundedTop(x,y,width,height,radius){const r=Math.min(radius,height,width/2);return `M${x},${y+height}V${y+r}Q${x},${y} ${x+r},${y}H${x+width-r}Q${x+width},${y} ${x+width},${y+r}V${y+height}Z`;}
+function columnChart(host,rows,spec){
+ crm.charts.push({host,rows,spec});drawColumns(host,rows,spec);
+}
+function drawColumns(host,rows,spec){
+ const g=C.chart,m=g.margin,width=Math.max(host.clientWidth,g.minWidth),height=g.height;
+ const values=rows.map(spec.value),max=Math.max(0,...values),ticks=niceTicks(max,g.ticks),top=ticks[ticks.length-1]||1;
+ const plotW=width-m.left-m.right,plotH=height-m.top-m.bottom,band=plotW/Math.max(rows.length,1),barW=Math.max(1,Math.min(g.barMax,band*g.barRatio));
+ const chart=svg('svg',{viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':spec.title});
+ for(const tick of ticks){const y=m.top+plotH-(tick/top)*plotH;chart.append(svg('line',{x1:m.left,x2:width-m.right,y1:y,y2:y,class:'grid'}),svg('text',{x:m.left-g.tickGap,y,'text-anchor':'end','dominant-baseline':'middle'},compact.format(tick)));}
+ const every=Math.max(1,Math.ceil(rows.length/Math.max(1,Math.floor(plotW/g.labelGap))));
+ const peak=values.indexOf(max),hits=[];
+ rows.forEach((row,index)=>{
+  const value=values[index],x=m.left+index*band+(band-barW)/2,h=(value/top)*plotH,y=m.top+plotH-h;
+  const bar=h>0?svg('path',{d:roundedTop(x,y,barW,h,g.radius),class:'bar'+(index===peak&&max>0?' peak':'')}):null;
+  if(bar)chart.append(bar);
+  hits.push([svg('rect',{x:m.left+index*band,y:m.top,width:band,height:plotH,class:'hit'}),bar,row]);
+  if(index%every===0)chart.append(svg('text',{x:x+barW/2,y:height-m.bottom+g.labelOffset,'text-anchor':'middle'},spec.label(row)));
+  if(index===peak&&max>0)chart.append(svg('text',{x:x+barW/2,y:y-g.peakGap,'text-anchor':'middle',class:'peak-label'},spec.short(value)));
+ });
+ chart.append(svg('line',{x1:m.left,x2:width-m.right,y1:m.top+plotH,y2:m.top+plotH,class:'base'}));
+ // Hit areas go last so they sit above bars and labels: the whole column band answers the pointer.
+ for(const [hit,bar,row] of hits){hit.addEventListener('pointermove',event=>{bar?.classList.add('on');showTip(event,spec.tip(row));});hit.addEventListener('pointerleave',()=>{bar?.classList.remove('on');hideTip();});chart.append(hit);}
+ host.replaceChildren(chart);
+}
+function drawCharts(){for(const chart of crm.charts)if(chart.host.isConnected&&chart.host.clientWidth)drawColumns(chart.host,chart.rows,chart.spec);}
+window.addEventListener('resize',()=>{cancelAnimationFrame(crm.resizeFrame);crm.resizeFrame=requestAnimationFrame(drawCharts);});
+function showTip(event,lines){
+ const tip=$('crm-tip');tip.replaceChildren(node('strong',{text:lines[0]}),...lines.slice(1).map(line=>node('div',{text:line})));tip.hidden=false;
+ const gap=C.tipOffset,box=tip.getBoundingClientRect();
+ const left=Math.min(event.clientX+gap,window.innerWidth-box.width-gap),top=event.clientY-box.height-gap<0?event.clientY+gap:event.clientY-box.height-gap;
+ tip.style.left=Math.max(gap,left)+'px';tip.style.top=top+'px';
+}
+function hideTip(){$('crm-tip').hidden=true;}
+function barList(rows,spec){
+ const max=Math.max(0,...rows.map(spec.value));
+ return node('ol',{class:'bars'},...rows.map(row=>{
+  const value=spec.value(row),item=node('li',{},node('span',{class:'bar-label',text:spec.label(row)}),node('span',{class:'bar-track'},node('span',{class:'bar-fill',style:'--w:'+(max?value/max*100:0)+'%'})),node('span',{class:'bar-value',text:spec.format(value)}),spec.sub?node('span',{class:'bar-sub',text:spec.sub(row)}):null);
+  if(spec.tip){item.addEventListener('pointermove',event=>showTip(event,spec.tip(row)));item.addEventListener('pointerleave',hideTip);}
+  return item;
+ }));
+}
+function tableView(rows){
+ return node('details',{class:'table-view'},node('summary',{text:copy('tableView')}),node('table',{},node('thead',{},node('tr',{},node('th',{text:copy('colLabel')}),node('th',{text:copy('colValue')}))),node('tbody',{},...rows.map(([label,value])=>node('tr',{},node('td',{text:label}),node('td',{text:value}))))));
+}
+function card(title,note,body,wide=false){return node('section',{class:'panel'+(wide?' wide':'')},node('h2',{text:title}),note?node('p',{class:'panel-note',text:note}):null,...[].concat(body));}
+function metric(icon,label,value,sub){return node('div',{class:'metric'},localIcon(icon),node('span',{class:'metric-label',text:label}),node('strong',{text:value}),sub?node('span',{class:'crm-kpi-sub',text:sub}):null);}
+
+// ── Render CRM ─────────────────────────────────────────────────────────────
+function renderCrm(){
+ hideTip();crm.charts=[];
+ const {overview,customers,match}=crm.data;
+ renderSales(overview);renderCustomers(customers);renderMatch(match);
+ requestAnimationFrame(drawCharts);
+}
+function renderSales(data){
+ if(data.empty){$('crm-kpis').replaceChildren();$('crm-insights').replaceChildren();$('crm-sales').replaceChildren(node('p',{class:'empty-state',text:copy('crmEmpty')}));return;}
+ const k=data.kpi,l=data.loyalty;
+ $('crm-kpis').replaceChildren(
+  metric('receipt',copy('kpiBills'),number.format(k.bills),copy('kpiDays',{days:number.format(k.days)})),
+  metric('beans',copy('kpiRevenue'),baht(k.revenue)),
+  metric('coffee',copy('kpiAvg'),baht(k.avg_bill)),
+  metric('scan',copy('kpiScan'),percent.format(l.scan_rate),copy('kpiScanSub',{claims:number.format(l.claims),points:number.format(l.points)})));
+ const insights=[];
+ const top=data.top_items[0];if(top)insights.push(['coffee',copy('insightTop'),copy('insightTopValue',{name:top.name,qty:number.format(top.qty)})]);
+ const hour=[...data.hourly].sort((a,b)=>b.bills-a.bills)[0];if(hour?.bills)insights.push(['clock',copy('insightHour'),copy('insightHourValue',{hour:String(hour.hour).padStart(2,'0'),bills:number.format(hour.bills)})]);
+ const weekday=[...data.weekday].sort((a,b)=>b.bills-a.bills)[0];if(weekday?.bills)insights.push(['calendar',copy('insightDay'),copy('insightDayValue',{day:C.weekdays[weekday.weekday],bills:number.format(weekday.bills)})]);
+ const optionTotal=data.options.reduce((sum,row)=>sum+row.qty,0);if(data.options[0])insights.push(['beans',copy('insightOption'),copy('insightOptionValue',{name:data.options[0].name,share:percent.format(data.options[0].qty/optionTotal)})]);
+ if(k.staff_bills)insights.push(['profile',copy('insightStaff'),copy('insightStaffValue',{share:percent.format(k.staff_bills/k.bills),bills:number.format(k.staff_bills)})]);
+ if(k.reprints)insights.push(['warning',copy('insightReprint'),copy('insightReprintValue',{bills:number.format(k.reprints)})]);
+ if(k.stamp_free||k.stamp_half)insights.push(['receipt',copy('insightStamp'),copy('insightStampValue',{free:number.format(k.stamp_free),half:number.format(k.stamp_half)})]);
+ $('crm-insights').replaceChildren(...insights.map(([icon,title,value])=>node('li',{},localIcon(icon),node('div',{},node('span',{text:title}),node('strong',{text:value})))));
+ const daily=node('div',{class:'chart'}),hourly=node('div',{class:'chart'}),weekly=node('div',{class:'chart'});
+ const grid=node('div',{class:'crm-grid'},
+  card(copy('chartDaily'),copy('chartDailyNote'),[daily,tableView(data.daily.map(row=>[day(row.day),baht(row.revenue)+' · '+copy('billsUnit',{value:number.format(row.bills)})]))],true),
+  card(copy('chartHourly'),copy('chartHourlyNote'),[hourly,tableView(data.hourly.filter(row=>row.bills).map(row=>[copy('hourLabel',{hour:String(row.hour).padStart(2,'0')}),copy('billsUnit',{value:number.format(row.bills)})+(row.top_item?' · '+row.top_item:'')]))]),
+  card(copy('chartWeekday'),'',[weekly,tableView(data.weekday.map(row=>[C.weekdays[row.weekday],copy('billsUnit',{value:number.format(row.bills)})+' · '+baht(row.revenue)]))]),
+  card(copy('chartTop'),copy('chartTopNote'),barList(data.top_items,{label:row=>row.name,value:row=>row.qty,format:value=>number.format(value),sub:row=>baht(row.revenue)+' · '+copy('billsUnit',{value:number.format(row.bills)}),tip:row=>[copy('cups',{value:number.format(row.qty)}),row.name,baht(row.revenue)]})),
+  card(copy('chartOptions'),copy('chartOptionsNote'),barList(data.options,{label:row=>row.name,value:row=>row.qty,format:value=>number.format(value),sub:row=>percent.format(row.qty/(optionTotal||1))})),
+  card(copy('chartDiscounts'),copy('chartDiscountsNote'),barList(data.discounts,{label:row=>row.name,value:row=>row.bills,format:value=>copy('billsUnit',{value:number.format(value)}),sub:row=>baht(row.amount)})),
+  card(copy('chartPayments'),'',[barList(data.payments,{label:row=>row.name,value:row=>row.bills,format:value=>copy('billsUnit',{value:number.format(value)}),sub:row=>baht(row.amount)+' · '+percent.format(row.bills/k.bills)}),node('h2',{text:copy('chartModes'),style:'margin-top:var(--panel-pad)'}),barList(data.sale_modes,{label:row=>row.name||copy('dash'),value:row=>row.bills,format:value=>copy('billsUnit',{value:number.format(value)}),sub:row=>baht(row.amount)})]));
+ $('crm-sales').replaceChildren(grid);
+ columnChart(daily,data.daily,{title:copy('chartDaily'),value:row=>row.revenue,label:row=>day(row.day),short:value=>compact.format(value),tip:row=>[baht(row.revenue),day(row.day),copy('billsUnit',{value:number.format(row.bills)})]});
+ columnChart(hourly,data.hourly,{title:copy('chartHourly'),value:row=>row.bills,label:row=>String(row.hour).padStart(2,'0'),short:value=>number.format(value),tip:row=>[copy('billsUnit',{value:number.format(row.bills)}),copy('hourLabel',{hour:String(row.hour).padStart(2,'0')})+' · '+baht(row.revenue),row.top_item?copy('tipTopItem',{name:row.top_item}):'']});
+ columnChart(weekly,data.weekday,{title:copy('chartWeekday'),value:row=>row.bills,label:row=>C.weekdays[row.weekday],short:value=>number.format(value),tip:row=>[copy('billsUnit',{value:number.format(row.bills)}),C.weekdays[row.weekday],baht(row.revenue)]});
+}
+function dataTable(columns,rows,label){
+ const head=node('tr',{},...columns.map(([label])=>node('th',{scope:'col',text:label})));
+ const body=rows.map((row,index)=>node('tr',{},...columns.map(([,cell,numeric])=>{const value=cell(row,index);return node('td',{class:numeric?'number':null},value instanceof Node?value:document.createTextNode(value??copy('dash')));})));
+ return node('div',{class:'table-scroll',tabindex:'0',role:'region','aria-label':label},node('table',{},node('thead',{},head),node('tbody',{},...body)));
+}
+function renderCustomers(data){
+ const host=$('crm-customers');
+ if(data.empty){host.replaceChildren(node('p',{class:'empty-state',text:copy('customersEmpty')}));return;}
+ const k=data.kpi;
+ const kpis=node('div',{class:'metrics',style:'padding:var(--panel-pad);margin:0'},
+  metric('customer',copy('kpiCustomers'),copy('people',{value:number.format(k.customers)})),
+  metric('repeat',copy('kpiRepeat'),percent.format(k.repeat_rate),copy('kpiRepeatSub',{repeat:number.format(k.repeat)})),
+  metric('calendar',copy('kpiVisits'),copy('times',{value:average.format(k.avg_visits)})),
+  metric('profile',copy('kpiNew'),copy('people',{value:number.format(k.new)})));
+ const buckets=barList(data.buckets,{label:row=>row.to===null?copy('bucketOpen',{from:row.from}):row.to===row.from?copy('bucketOne',{from:row.from}):copy('bucketLabel',{from:row.from,to:row.to}),value:row=>row.customers,format:value=>copy('people',{value:number.format(value)}),sub:row=>percent.format(row.customers/(k.customers||1))});
+ const columns=[[copy('colRow'),(row,index)=>number.format(index+1),true],
+  [copy('colCustomer'),row=>node('span',{title:row.customer_id,text:shortId(row.customer_id)})],
+  [copy('colVisits'),row=>copy('daysUnit',{value:number.format(row.visits)}),true],
+  [copy('colPoints'),row=>number.format(row.points),true],
+  [copy('colFirst'),row=>moment(row.first)],[copy('colLast'),row=>moment(row.last)],
+  [copy('colGap'),row=>row.avg_gap_days===null?null:average.format(row.avg_gap_days),true],
+  [copy('colReceipts'),row=>number.format(row.receipts),true],
+  [copy('colItems'),row=>row.items.length?row.items.map(item=>item.name+' ×'+number.format(item.qty)).join(', '):null]];
+ host.replaceChildren(kpis,
+  node('div',{class:'crm-grid',style:'padding:0 var(--panel-pad)'},card(copy('bucketsTitle'),'',buckets)),
+  node('h2',{text:copy('topCustomers'),style:'padding:0 var(--panel-pad) var(--gap)'}),
+  dataTable(columns,data.top,copy('topCustomers')));
+}
+function statusChip(key,count){const conf=C.statuses[key]||{label:key,tone:'info'};return node('span',{class:'chip '+conf.tone},node('span',{text:conf.label}),count!==undefined?node('strong',{text:number.format(count)}):null);}
+function renderMatch(data){
+ const host=$('crm-match');
+ const minutes=Math.round(data.window_seconds/C.secondsPerMinute);
+ $('crm-match-note').textContent=copy('matchNote',{window:number.format(minutes),typical:data.typical_gap_seconds===null||data.typical_gap_seconds===undefined?'':copy(data.typical_gap_seconds<0?'matchEarlier':'matchLater',{gap:number.format(Math.abs(data.typical_gap_seconds))})});
+ if(!data.rows.length){host.replaceChildren(node('p',{class:'empty-state',text:copy('matchEmpty'),style:'margin:var(--panel-pad)'}));return;}
+ const chips=node('div',{class:'chips'},...Object.keys(C.statuses).filter(key=>data.counts[key]).map(key=>statusChip(key,data.counts[key])));
+ const rows=[...data.rows].reverse();
+ const columns=[[copy('colRow'),(row,index)=>number.format(index+1),true],
+  [copy('colShop'),row=>row.shop_code],[copy('colBill'),row=>row.bill_no+' · '+day(row.bill_date)],
+  [copy('colAmount'),row=>baht(row.amount),true],[copy('colPos'),row=>row.pos_total===null?null:baht(row.pos_total),true],
+  [copy('colOurPoints'),row=>number.format(row.points),true],[copy('colLinePoints'),row=>row.line_points===null?null:number.format(row.line_points),true],
+  [copy('colClicked'),row=>row.clicked_at?moment(row.clicked_at):null],[copy('colLineAt'),row=>row.line_at?moment(row.line_at):null],
+  [copy('colGapSec'),row=>row.gap_seconds===null?null:node('span',{title:copy('colGapHint'),text:number.format(row.gap_seconds)}),true],
+  [copy('colCustomer'),row=>row.line_customer?node('span',{title:row.line_customer,text:shortId(row.line_customer)}):null],
+  [copy('colItems'),row=>row.items.length?row.items.map(item=>item.name+(item.qty===1?'':' ×'+number.format(item.qty))).join(', '):null],
+  [copy('colStatus'),row=>node('div',{class:'flags'},...(row.flags.length?row.flags:['ok']).map(flag=>statusChip(flag)))]];
+ host.replaceChildren(chips,dataTable(columns,rows,copy('matchTable')));
+}
+
+// ── Inbox ──────────────────────────────────────────────────────────────────
+async function loadInbox(){
+ if(!state.token||state.busy)return;
+ busy(true);$('inbox-error').hidden=true;
+ try{crm.inbox=await (await api('/feedback')).json();renderInbox();}
+ catch(error){if(state.token){$('inbox-error-text').textContent=error.message;$('inbox-error').hidden=false;status(error.message,true);}}
+ finally{busy(false);}
+}
+function renderInbox(){
+ const data=crm.inbox;if(!data)return;
+ const total=Object.values(data.counts).reduce((sum,count)=>sum+count,0);
+ const filters=[['',copy('inboxAll'),total],...Object.entries(F.statuses).map(([key,label])=>[key,label,data.counts[key]||0])];
+ $('inbox-filter').replaceChildren(...filters.map(([key,label,count])=>node('button',{type:'button',class:'chip','aria-pressed':String(crm.inboxFilter===key),onclick:()=>{crm.inboxFilter=key;renderInbox();}},node('span',{text:label}),node('strong',{text:number.format(count)}))));
+ const items=data.items.filter(item=>!crm.inboxFilter||item.status===crm.inboxFilter);
+ $('inbox-empty').hidden=items.length>0;
+ $('inbox-list').replaceChildren(...items.map(item=>{
+  const select=node('select',{'aria-label':copy('fbStatus')},...Object.entries(F.statuses).map(([key,label])=>option(key,label)));select.value=item.status;
+  select.addEventListener('change',()=>saveStatus(item,select));
+  const thumbs=node('ul',{class:'thumbs'},...item.images.map((image,index)=>{const img=node('img',{alt:copy('attachmentAlt',{n:index+1})});const button=node('button',{type:'button',class:'secondary','aria-label':copy('attachmentAlt',{n:index+1}),onclick:()=>openImage(image.id)},img);loadThumb(image.id,img);return node('li',{},button);}));
+  return node('li',{class:'fb-card','data-status':item.status},
+   node('div',{class:'fb-head'},node('span',{class:'badge '+item.kind,text:F.kinds[item.kind]?.label||item.kind}),node('h2',{text:item.topic}),node('label',{class:'fb-status'},node('span',{text:copy('fbStatus')}),select)),
+   node('p',{class:'fb-detail',text:item.detail}),item.images.length?thumbs:null,
+   node('p',{class:'fb-meta',text:copy('inboxMeta',{time:when(item.created),reporter:item.reporter||copy('anonymous'),page:item.page||copy('dash')})}));
+ }));
+}
+async function imageUrl(id){
+ if(crm.images.has(id))return crm.images.get(id);
+ const blob=await (await api('/feedback/image/'+id)).blob();const url=URL.createObjectURL(blob);crm.images.set(id,url);return url;
+}
+async function loadThumb(id,img){try{img.src=await imageUrl(id);}catch{}}
+async function openImage(id){try{$('image-holder').replaceChildren(node('img',{id:'image-view',src:await imageUrl(id),alt:copy('imageTitle')}));$('image-dialog').showModal();}catch(error){status(error.message,true);}}
+async function saveStatus(item,select){
+ const previous=item.status;busy(true);
+ try{await api('/feedback/'+item.id+'/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:select.value})});crm.inbox.counts[previous]--;crm.inbox.counts[select.value]=(crm.inbox.counts[select.value]||0)+1;item.status=select.value;status(copy('statusSaved'));}
+ catch(error){select.value=previous;status(error.message,true);}
+ finally{busy(false);renderInbox();}
+}
+
+// ── Feedback form ──────────────────────────────────────────────────────────
+function fbMessage(message='',error=false){$('feedback-message').textContent=message;$('feedback-message').dataset.error=String(error);}
+function resetFeedback(){
+ for(const attachment of crm.attachments)URL.revokeObjectURL(attachment.url);crm.attachments=[];
+ $('feedback-form').reset();renderAttachments();fbMessage();
+}
+function openFeedback(){
+ if(!state.token)return;
+ fbMessage();$('feedback-dialog').showModal();
+ (document.querySelector('#fb-kinds input:checked')||document.querySelector('#fb-kinds input'))?.focus();
+}
+function addAttachment(blob){
+ if(crm.attachments.length>=F.maxImages){fbMessage(copy('fbTooMany',{max:F.maxImages}),true);return false;}
+ if(!blob.type.startsWith('image/')){fbMessage(copy('fbNotImage'),true);return false;}
+ crm.attachments.push({blob,url:URL.createObjectURL(blob)});renderAttachments();return true;
+}
+function renderAttachments(){
+ $('fb-attachments').replaceChildren(...crm.attachments.map((attachment,index)=>node('li',{},
+  node('img',{src:attachment.url,alt:copy('attachmentAlt',{n:index+1})}),
+  node('div',{},node('button',{type:'button',class:'secondary',text:copy('fbDraw'),onclick:()=>openAnnotate(index)}),
+   node('button',{type:'button',class:'secondary',text:copy('fbRemove'),onclick:()=>{URL.revokeObjectURL(attachment.url);crm.attachments.splice(index,1);renderAttachments();}})))));
+ $('fb-pick').disabled=$('fb-capture').disabled=crm.attachments.length>=F.maxImages;
+}
+async function captureScreen(){
+ if(!navigator.mediaDevices?.getDisplayMedia){fbMessage(copy('captureUnsupported'),true);return;}
+ const dialog=$('feedback-dialog');dialog.close();let stream=null,added=false;
+ try{
+  stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:false,preferCurrentTab:true});
+  const video=document.createElement('video');video.srcObject=stream;video.muted=true;await video.play();
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext('2d').drawImage(video,0,0);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,F.imageType));
+  if(blob)added=addAttachment(blob);
+ }catch{fbMessage(copy('captureCancelled'));}
+ finally{stream?.getTracks().forEach(track=>track.stop());if(state.token){dialog.showModal();if(added)openAnnotate(crm.attachments.length-1);}}
+}
+async function sendFeedback(event){
+ event.preventDefault();if(state.busy||!state.token)return;
+ const kind=document.querySelector('#fb-kinds input:checked')?.value||'',topic=$('fb-topic').value.trim(),detail=$('fb-detail').value.trim();
+ for(const [id,bad] of [['fb-topic',!topic],['fb-detail',!detail]])$(id).setAttribute('aria-invalid',String(bad));
+ if(!kind){fbMessage(copy('fbNeedKind'),true);document.querySelector('#fb-kinds input')?.focus();return;}
+ if(!topic){fbMessage(copy('fbNeedTopic'),true);$('fb-topic').focus();return;}
+ if(!detail){fbMessage(copy('fbNeedDetail'),true);$('fb-detail').focus();return;}
+ const form=new FormData();form.append('kind',kind);form.append('topic',topic);form.append('detail',detail);form.append('reporter',$('fb-reporter').value.trim());
+ form.append('page',document.querySelector('[data-view-target][aria-current=page]')?.textContent||'');
+ crm.attachments.forEach((attachment,index)=>form.append('image',attachment.blob,'image-'+(index+1)+'.png'));
+ busy(true);fbMessage(copy('fbSending'));
+ try{await api('/feedback',{method:'POST',body:form});resetFeedback();$('feedback-dialog').close();status(copy('fbSent'));if(crm.view==='inbox'){busy(false);await loadInbox();}}
+ catch(error){fbMessage(error.message,true);}
+ finally{busy(false);renderAttachments();}
+}
+
+// ── Annotation ─────────────────────────────────────────────────────────────
+function openAnnotate(index){
+ const attachment=crm.attachments[index];if(!attachment)return;
+ const image=new Image();
+ image.onload=()=>{
+  const scale=Math.min(1,F.maxPx/Math.max(image.naturalWidth,image.naturalHeight)),canvas=$('annotate-canvas');
+  canvas.width=Math.round(image.naturalWidth*scale);canvas.height=Math.round(image.naturalHeight*scale);
+  crm.annotate={index,image,shapes:[],current:null,tool:Object.keys(F.tools)[0],color:F.colors[0].value,width:Math.max(F.stroke,canvas.width*F.strokeRatio)};
+  renderTools();redraw();$('annotate-dialog').showModal();
+ };
+ image.src=attachment.url;
+}
+function renderTools(){
+ const a=crm.annotate,tools=$('annotate-tools');
+ tools.replaceChildren(
+  ...Object.entries(F.tools).map(([key,label])=>node('button',{type:'button',class:'secondary','aria-pressed':String(a.tool===key),text:label,onclick:()=>{a.tool=key;renderTools();}})),
+  node('span',{class:'tool-sep','aria-hidden':'true'}),
+  ...F.colors.map(color=>node('button',{type:'button',class:'secondary swatch','aria-pressed':String(a.color===color.value),'aria-label':copy('annotateColor',{color:color.label}),title:color.label,onclick:()=>{a.color=color.value;renderTools();}},node('span',{style:'--swatch:'+color.value}))),
+  node('span',{class:'tool-sep','aria-hidden':'true'}),
+  node('button',{type:'button',class:'secondary',onclick:()=>{a.shapes.pop();redraw();}},localIcon('undo'),document.createTextNode(copy('annotateUndo'))),
+  node('button',{type:'button',class:'secondary',text:copy('annotateClear'),onclick:()=>{a.shapes=[];redraw();}}));
+}
+function redraw(){
+ const a=crm.annotate;if(!a)return;const canvas=$('annotate-canvas'),ctx=canvas.getContext('2d');
+ ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(a.image,0,0,canvas.width,canvas.height);
+ for(const shape of [...a.shapes,a.current].filter(Boolean)){
+  ctx.strokeStyle=shape.color;ctx.lineWidth=shape.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+  if(shape.tool==='pen'){shape.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));}
+  else{const {from,to}=shape;
+   if(shape.tool==='circle')ctx.ellipse((from.x+to.x)/2,(from.y+to.y)/2,Math.abs(to.x-from.x)/2,Math.abs(to.y-from.y)/2,0,0,Math.PI*2);
+   else if(shape.tool==='rect')ctx.rect(from.x,from.y,to.x-from.x,to.y-from.y);
+   else{const angle=Math.atan2(to.y-from.y,to.x-from.x),head=shape.width*F.arrowScale;ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y);for(const side of [1,-1])ctx.moveTo(to.x,to.y),ctx.lineTo(to.x-head*Math.cos(angle-side*F.arrowAngle),to.y-head*Math.sin(angle-side*F.arrowAngle));}}
+  ctx.stroke();
+ }
+}
+function point(event){const canvas=$('annotate-canvas'),box=canvas.getBoundingClientRect();return {x:(event.clientX-box.left)*canvas.width/box.width,y:(event.clientY-box.top)*canvas.height/box.height};}
+$('annotate-canvas').addEventListener('pointerdown',event=>{const a=crm.annotate;if(!a)return;event.preventDefault();event.target.setPointerCapture(event.pointerId);const p=point(event);a.current=a.tool==='pen'?{tool:'pen',color:a.color,width:a.width,points:[p]}:{tool:a.tool,color:a.color,width:a.width,from:p,to:p};redraw();});
+$('annotate-canvas').addEventListener('pointermove',event=>{const a=crm.annotate;if(!a?.current)return;const p=point(event);if(a.current.tool==='pen')a.current.points.push(p);else a.current.to=p;redraw();});
+for(const type of ['pointerup','pointercancel'])$('annotate-canvas').addEventListener(type,()=>{const a=crm.annotate;if(!a?.current)return;a.shapes.push(a.current);a.current=null;redraw();});
+$('annotate-save').addEventListener('click',()=>{const a=crm.annotate;if(!a)return;$('annotate-canvas').toBlob(blob=>{if(!blob)return;const attachment=crm.attachments[a.index];if(attachment){URL.revokeObjectURL(attachment.url);attachment.blob=blob;attachment.url=URL.createObjectURL(blob);}crm.annotate=null;$('annotate-dialog').close();renderAttachments();},F.imageType);});
+$('annotate-cancel').addEventListener('click',()=>$('annotate-dialog').close());
+$('annotate-dialog').addEventListener('close',()=>{crm.annotate=null;});
+
+// ── Wiring ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('[data-view-target]').forEach(tab=>tab.addEventListener('click',()=>showView(tab.dataset.viewTarget)));
+$('crm-shop').addEventListener('change',()=>{crm.shopChosen=true;loadCrm();});$('crm-period').addEventListener('change',loadCrm);
+$('crm-filters').addEventListener('submit',event=>{event.preventDefault();loadCrm();});
+$('crm-retry').addEventListener('click',()=>crm.meta?loadCrm():crmStart());$('inbox-retry').addEventListener('click',loadInbox);
+$('crm-file').addEventListener('change',event=>{uploadFiles([...event.target.files]);event.target.value='';});
+const drop=$('crm-drop');
+for(const type of ['dragenter','dragover'])drop.addEventListener(type,event=>{event.preventDefault();drop.classList.add('dragover');});
+for(const type of ['dragleave','drop'])drop.addEventListener(type,()=>drop.classList.remove('dragover'));
+drop.addEventListener('drop',event=>{event.preventDefault();uploadFiles([...event.dataTransfer.files]);});
+$('feedback-open').addEventListener('click',openFeedback);$('inbox-new').addEventListener('click',openFeedback);
+$('feedback-cancel').addEventListener('click',()=>$('feedback-dialog').close());$('feedback-cancel-top').addEventListener('click',()=>$('feedback-dialog').close());
+$('feedback-form').addEventListener('submit',sendFeedback);
+$('fb-pick').addEventListener('click',()=>$('fb-file').click());
+$('fb-file').addEventListener('change',event=>{for(const file of event.target.files)if(!addAttachment(file))break;event.target.value='';});
+$('fb-capture').addEventListener('click',captureScreen);
+$('feedback-dialog').addEventListener('paste',event=>{for(const item of event.clipboardData?.items||[])if(item.type.startsWith('image/')){const file=item.getAsFile();if(file){event.preventDefault();addAttachment(file);}}});
+$('image-close').addEventListener('click',()=>$('image-dialog').close());$('image-dialog').addEventListener('close',()=>$('image-holder').replaceChildren());
+$('fb-kinds').append(...Object.entries(F.kinds).map(([key,kind])=>node('label',{},node('input',{type:'radio',name:'fb-kind',value:key}),node('strong',{text:kind.label}),node('small',{text:kind.hint}))));
+$('fb-topics').append(...F.topics.map(topic=>node('option',{value:topic})));
+document.querySelector('[data-copy="fbImages"]').textContent=copy('fbImages',{max:F.maxImages});
+document.querySelectorAll('[data-copy-placeholder]').forEach(el=>el.placeholder=copy(el.dataset.copyPlaceholder));
+document.querySelectorAll('[data-copy-label]').forEach(el=>el.setAttribute('aria-label',copy(el.dataset.copyLabel)));
+renderAttachments();
 </script>
 </body>
 </html>
